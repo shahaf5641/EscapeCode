@@ -2,46 +2,59 @@ using UnityEngine;
 
 public class ChestInteraction : MonoBehaviour
 {
-    private Animator animator;
-    public GameObject key; // Assign this in Inspector (initially disabled)
-    public GameObject chestCodeWindowPanel; // Code panel shown on first click
+    public CodeWindowManager codeWindow;
+    public Animator chestAnimator;
+    public GameObject keyObject;
 
-    void Start()
-    {
-        animator = GetComponent<Animator>();
-        gameObject.SetActive(false); // Hide chest at start
-
-        if (key != null)
-        {
-            key.SetActive(false); // Hide key at start
-        }
-
-        if (chestCodeWindowPanel != null)
-        {
-            chestCodeWindowPanel.SetActive(false); // Hide code popup at start
-        }
-    }
+    private bool chestOpened = false;
 
     void OnMouseDown()
     {
-        if (chestCodeWindowPanel != null && !chestCodeWindowPanel.activeSelf)
-        {
-            chestCodeWindowPanel.SetActive(true); // show puzzle instead of auto-opening
-        }
+        if (chestOpened || codeWindow == null) return;
+
+        string problemText =
+        @"has_key_code = False
+        chest_locked = True
+
+        if has_key_code:
+            chest_locked = False
+
+        if chest_locked == False:
+            print(""The chest unlocks!"")
+        else:
+            print(""The chest is still locked."")";
+
+        string defaultCode ="";
+
+        codeWindow.Open(
+            problemText,
+            defaultCode,
+            CheckChestCode,
+            OnChestSolved
+        );
     }
 
-    public void OpenChestAndRevealKey()
+    private bool CheckChestCode(string userCode)
     {
-        animator.SetTrigger("Open");
+        return userCode.Contains("has_key_code = True") || userCode.Contains("has_key_code=True");
+    }
 
-        if (key != null)
+    private void OnChestSolved()
+    {
+        if (chestOpened) return;
+
+        chestOpened = true;
+        codeWindow.Close(); // Closes the window & unlocks movement
+
+        if (chestAnimator != null)
         {
-            key.SetActive(true);
-            Transform glow = key.transform.Find("KeyGlow");
-            if (glow != null)
-            {
-                glow.gameObject.SetActive(true);
-            }
+            chestAnimator.SetTrigger("Open"); // Plays animation
         }
+
+        if (keyObject != null)
+        {
+            keyObject.SetActive(true); // Reveals the key
+        }
+
     }
 }
