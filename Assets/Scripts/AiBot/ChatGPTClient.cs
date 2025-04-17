@@ -8,9 +8,24 @@ using Newtonsoft.Json;
 
 public class ChatGPTClient : MonoBehaviour
 {
-    public string openAIKey = "YOUR API KEY HERE";
     public GameObject currentPuzzle;
+    private string openAIKey;
+    
+    void Awake()
+    {
+        TextAsset jsonFile = Resources.Load<TextAsset>("openai_config");
 
+        if (jsonFile == null)
+        {
+            Debug.LogError("❌ openai_config.json not found in Resources!");
+        }
+        else
+        {
+            Debug.Log("✅ Loaded raw config: " + jsonFile.text);
+        }
+        OpenAIConfig config = JsonUtility.FromJson<OpenAIConfig>(jsonFile.text);
+        openAIKey = config?.openai_api_key;
+    }
     public IEnumerator GetAIHelp(string prompt, Action<string> onResponse)
     {
         string apiUrl = "https://api.openai.com/v1/chat/completions";
@@ -112,3 +127,4 @@ public class ChatGPTResponse
 {
     public ChatGPTChoice[] choices;
 }
+

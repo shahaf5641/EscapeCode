@@ -7,8 +7,24 @@ using System;
 
 public class WhisperTranscriber : MonoBehaviour
 {
-    public string openAIKey = "YOUR API KEY";
+    private string openAIKey;
 
+    void Awake()
+    {
+        TextAsset jsonFile = Resources.Load<TextAsset>("openai_config");
+
+        if (jsonFile == null)
+        {
+            Debug.LogError("❌ openai_config.json not found in Resources!");
+        }
+        else
+        {
+            Debug.Log("✅ Loaded raw config: " + jsonFile.text);
+        }
+        OpenAIConfig config = JsonUtility.FromJson<OpenAIConfig>(jsonFile.text);
+        openAIKey = config?.openai_api_key;
+
+    }
     public IEnumerator TranscribeAudio(string filePath, Action<string> onTranscriptionComplete)
     {
         byte[] audioData = File.ReadAllBytes(filePath);

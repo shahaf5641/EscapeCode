@@ -245,6 +245,13 @@
       },
       "url": "https://packages.unity.com"
     },
+    "dotenv": {
+      "version": "https://github.com/motdotla/dotenv.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "e2586db955cba6268dab0ed867b693cfe3ff5b34"
+    },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",
       "depth": 0,
