@@ -17,12 +17,12 @@ public class DoorInteraction : MonoBehaviour
         string pressedButtonValue = PuzzleState.pressedButton ? "True" : "False";
 
         string problemText =
-        @"The Final Boss
+        $@"The Final Boss
 
         first_number = 4
         second_number = 5
         third_number = 10
-        button_pressed = False
+        button_pressed = {pressedButtonValue}
 
         code = first_number * second_number + third_number
 
@@ -34,9 +34,10 @@ public class DoorInteraction : MonoBehaviour
             door_open = False
 
         Write a line assigning the correct value to 'answer':
-        answer = ""______""
+        answer = ______
 
         Need a hint? Say: “Give me a clue” or “Help me solve this”";
+
 
         FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
 
@@ -54,7 +55,7 @@ public class DoorInteraction : MonoBehaviour
     {
         string code = userCode.ToLower().Replace(" ", "").Replace("\n", "").Replace("\r", "");
 
-        bool containsKeyLogic = code.Contains("has_key=true");
+        bool containsKeyLogic = code.Contains("answer=30");
 
         return containsKeyLogic && PuzzleState.pressedButton && KeyInventory.HasKey;
     }
@@ -63,7 +64,6 @@ public class DoorInteraction : MonoBehaviour
     {
         if (doorOpened) return;
         doorOpened = true;
-        codeWindow.Close();
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Room solved!");
     }
 

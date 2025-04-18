@@ -26,23 +26,23 @@ public class VoiceCommandManager : MonoBehaviour
         {
             string input = text.ToLower();
 
-            if (input.Contains("code mode"))
+            if (IsCodeModeActivation(input))
             {
                 chatGPT.isInCodeMode = true;
-                codeWindow.resultOutput.text = "🧠 Code Mode Activated. Speak your code guess.";
+                codeWindow.resultOutput.text = "Code Mode Activated";
                 return;
             }
 
-            if (input.Contains("exit code mode") || input.Contains("leave code mode"))
+            if (IsCodeModeDeactivation(input))
             {
                 chatGPT.isInCodeMode = false;
-                codeWindow.resultOutput.text = "👋 Left Code Mode. You can now talk normally.";
+                codeWindow.resultOutput.text = "Left Code Mode";
                 return;
             }
 
-            Debug.Log("Transcribed: " + text);
+            Debug.Log("Transcribed: " + input);
 
-            StartCoroutine(chatGPT.GetAIHelp(text, (response) =>
+            StartCoroutine(chatGPT.GetAIHelp(input, (response) =>
             {
                 codeWindow.codeInput.text = response;
             }));
@@ -53,5 +53,38 @@ public class VoiceCommandManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1f); // 1 second cooldown
         isCoolingDown = false;
+    }
+
+    private bool IsCodeModeActivation(string input)
+    {
+        string[] activationPhrases = new[]
+        {
+            "code mode", "codemode", "cod mod", "cowd mode", "cold mode", "coat mode", "codemood", "cowed mode",
+            "start coding", "coding mode", "i want to guess"
+        };
+
+        foreach (var phrase in activationPhrases)
+        {
+            if (input.Contains(phrase))
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool IsCodeModeDeactivation(string input)
+    {
+        string[] deactivationPhrases = new[]
+        {
+            "exit code mode", "leave code mode", "stop coding", "exit coding", "normal mode"
+        };
+
+        foreach (var phrase in deactivationPhrases)
+        {
+            if (input.Contains(phrase))
+                return true;
+        }
+
+        return false;
     }
 }

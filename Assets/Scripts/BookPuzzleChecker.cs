@@ -14,7 +14,7 @@ public class BookInteraction : MonoBehaviour
         string problemText =
         @"The Secret Code
         
-        string = ""T9a52D6am""
+        string = ""t9a52d6am""
         secret_code = string[0] + string[2] + string[5] + string[7] + string[8]
 
         What is the correct line of code to assign the secret_code variable
@@ -38,22 +38,17 @@ public class BookInteraction : MonoBehaviour
 
     private bool CheckBookCode(string userCode)
     {
-        return userCode.Contains("secret_code = \"TaDam\"") || userCode.Contains("secret_code=\"TaDam\"");
+        return userCode.Contains("secret_code = \"tadam\"") || userCode.Contains("secret_code=\"tadam\"");
     }
 
     private void OnBookSolved()
     {
         isSolved = true;
-        codeWindow.Close();
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Book solved!");
         if (chestObject != null)
         {
             chestObject.SetActive(true);
             Animator chestAnim = chestObject.GetComponent<Animator>();
-            if (chestAnim != null)
-            {
-                chestAnim.Play("Idle");
-            }
         }
             StartCoroutine(DeactivateAfterDelay(3f));
         }

@@ -55,7 +55,6 @@ public class ChestInteraction : MonoBehaviour
         if (chestOpened) return;
 
         chestOpened = true;
-        codeWindow.Close();
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Chest solved!");
 
         if (chestAnimator != null)

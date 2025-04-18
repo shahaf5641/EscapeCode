@@ -43,10 +43,12 @@ public class CodeWindowManager : MonoBehaviour
         {
             onSolved?.Invoke();
             solved = true;
+            codeInput.text = "";
+            Close();
         }
         else
         {
-            resultOutput.text = "Try again.";
+            resultOutput.text = "Try again";
         }
     }
 
