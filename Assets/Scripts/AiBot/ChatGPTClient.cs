@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 
 public class ChatGPTClient : MonoBehaviour
 {
+    public bool isInCodeMode = false;
     public GameObject currentPuzzle;
     private string openAIKey;
     
@@ -19,48 +20,55 @@ public class ChatGPTClient : MonoBehaviour
         {
             Debug.LogError("❌ openai_config.json not found in Resources!");
         }
-        else
-        {
-            Debug.Log("✅ Loaded raw config: " + jsonFile.text);
-        }
         OpenAIConfig config = JsonUtility.FromJson<OpenAIConfig>(jsonFile.text);
         openAIKey = config?.openai_api_key;
     }
     public IEnumerator GetAIHelp(string prompt, Action<string> onResponse)
     {
         string apiUrl = "https://api.openai.com/v1/chat/completions";
+        string systemPrompt;
+
+        if (isInCodeMode)
+        {
+            systemPrompt =
+            "You are in CODE MODE.\n" +
+            "Your job is to take the player's spoken input and convert it into one line of valid Python code that reflects what they meant to write — even if the guess is incorrect.\n\n" +
+
+            "Focus on clarity, accuracy, and clean syntax.\n\n" +
+
+            "You must:\n" +
+            "- Extract the intent from the spoken phrase\n" +
+            "- Preserve letter casing if specified (capitalize spelled-out letters like T A D A M → TADAM)\n" +
+            "- Respect variable names like 'secret code' → secret_code\n" +
+            "- If the input sounds like code (contains 'code', 'equals', 'underscore', spelled letters, etc.), translate it into a Python assignment\n\n" +
+
+            "Examples:\n\n" +
+
+            "Player: secret underscore code equals T A D A M\n" +
+            "You: secret_code = \"TADAM\"\n\n" +
+
+            "Player: secret code equals ta-ba-v\n" +
+            "You: secret_code = \"tabav\"\n\n" +
+
+            "Player: code equals burger\n" +
+            "You: code = \"burger\"\n\n" +
+
+            "Player: secret code is blah blah blah\n" +
+            "You: secret_code = \"blahblahblah\"\n\n" +
+
+            "If the input is completely off-topic (e.g. \"I like pizza\"), respond with:\n" +
+            "\"That doesn’t sound like a code guess. Try saying the code again.\"";
+        }
+        else
+        {
+            systemPrompt =
+            "You are a friendly AI assistant inside a coding puzzle game. " +
+            "The player can ask you questions about the game, the puzzles, or anything in general. " +
+            "Answer helpfully and in-character as an assistant guiding them through a mysterious game world.\n\n" +
+            "If the player wants to solve a puzzle, they may say \"code mode\" to begin submitting code-like guesses.";
+        }
 
         string puzzleContext = currentPuzzle.GetComponent<PuzzleContextFormatter>().GetPromptString();
-
-        string systemPrompt =
-        "You are an AI assistant inside a coding puzzle game. " +
-        "You can help the player by answering questions, giving advice, or helping them understand puzzles. " +
-        "But when the player tries to guess the answer to a puzzle, you must switch to strict code-solving mode.\n\n" +
-
-        "When in code-solving mode:\n" +
-        "- Only respond with the correct Python code line.\n" +
-        "- Do not explain or greet.\n" +
-        "- Fix case or syntax issues if the guess is close.\n" +
-        "- Example format: secret_code = \"Nana\"\n\n" +
-
-        "When the player asks a general question (like \"what is the puzzle?\" or \"I don’t know the code\"), respond helpfully and conversationally.\n\n" +
-
-        "Only correct the player IF their input is clearly a close attempt — such as slight misspellings, letter case differences, or a phonetically similar version of the answer. If the input includes nonsense words (like 'blah blah') or is too far off, do NOT respond with the code." +
-
-        "Examples:\n\n" +
-
-        "Player: secret code equals TADAM\n" +
-        "You: secret_code = \"TaDam\"\n\n" +
-
-        "Player: I don't know the code\n" +
-        "You: No worries! Try looking at the string and see which letters are picked. I can help if you get stuck.\n\n" +
-
-        "Player: what is the puzzle again?\n" +
-        "You: The puzzle is about extracting the correct letters from a string. Look at the indexes used.\n\n" +
-
-        "Player: I like pizza\n" +
-        "You: Let me know when you're ready to guess the code or ask a question.\n\n";
-
         systemPrompt += puzzleContext;
 
         var messages = new List<Dictionary<string, string>>

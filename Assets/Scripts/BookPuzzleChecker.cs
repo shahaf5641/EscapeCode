@@ -24,7 +24,7 @@ public class BookInteraction : MonoBehaviour
 
         Need a hint? Say: “Give me a clue” or “Help me solve this”";
 
-        FindObjectOfType<ChatGPTClient>().currentPuzzle = this.gameObject;
+        FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
 
         string defaultCode ="";
         codeWindow.Open(
@@ -45,7 +45,7 @@ public class BookInteraction : MonoBehaviour
     {
         isSolved = true;
         codeWindow.Close();
-        FindObjectOfType<FeedbackUIManager>().ShowMessage("Book solved!");
+        FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Book solved!");
         if (chestObject != null)
         {
             chestObject.SetActive(true);

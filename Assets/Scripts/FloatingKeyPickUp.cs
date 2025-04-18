@@ -29,7 +29,7 @@ public class FloatingKeyPickup : MonoBehaviour
 
     void OnMouseDown()
     {
-        FindObjectOfType<FeedbackUIManager>().ShowMessage("Key picked up!");
+        FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Key picked up!");
         Invoke(nameof(HideChest), 3f);
         gameObject.SetActive(false);
         KeyInventory.HasKey = true;

@@ -24,7 +24,24 @@ public class VoiceCommandManager : MonoBehaviour
         recorder.StopRecordingAndSave();
         StartCoroutine(transcriber.TranscribeAudio(recorder.GetSavedFilePath(), (text) =>
         {
+            string input = text.ToLower();
+
+            if (input.Contains("code mode"))
+            {
+                chatGPT.isInCodeMode = true;
+                codeWindow.resultOutput.text = "🧠 Code Mode Activated. Speak your code guess.";
+                return;
+            }
+
+            if (input.Contains("exit code mode") || input.Contains("leave code mode"))
+            {
+                chatGPT.isInCodeMode = false;
+                codeWindow.resultOutput.text = "👋 Left Code Mode. You can now talk normally.";
+                return;
+            }
+
             Debug.Log("Transcribed: " + text);
+
             StartCoroutine(chatGPT.GetAIHelp(text, (response) =>
             {
                 codeWindow.codeInput.text = response;
@@ -34,8 +51,7 @@ public class VoiceCommandManager : MonoBehaviour
 
     private IEnumerator Cooldown()
     {
-        yield return new WaitForSeconds(10); // 10 second cooldown
+        yield return new WaitForSeconds(1f); // 1 second cooldown
         isCoolingDown = false;
     }
-
 }

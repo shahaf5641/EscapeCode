@@ -38,7 +38,7 @@ public class DoorInteraction : MonoBehaviour
 
         Need a hint? Say: “Give me a clue” or “Help me solve this”";
 
-        FindObjectOfType<ChatGPTClient>().currentPuzzle = this.gameObject;
+        FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
 
         string defaultCode ="";
 
@@ -64,7 +64,7 @@ public class DoorInteraction : MonoBehaviour
         if (doorOpened) return;
         doorOpened = true;
         codeWindow.Close();
-        FindObjectOfType<FeedbackUIManager>().ShowMessage("Room solved!");
+        FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Room solved!");
     }
 
     private IEnumerator DeactivateAfterDelay(float delay)

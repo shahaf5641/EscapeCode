@@ -22,7 +22,7 @@ public class PressableButton : MonoBehaviour
             PuzzleState.pressedButton = true;
 
             rend.material = greenMaterial; // Change to green
-            FindObjectOfType<FeedbackUIManager>().ShowMessage("Button pressed!");
+            FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Button pressed!");
         }
     }
 }

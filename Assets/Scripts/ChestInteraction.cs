@@ -33,7 +33,7 @@ public class ChestInteraction : MonoBehaviour
         Need a hint? Say: “Give me a clue” or “Help me solve this”";
 
 
-        FindObjectOfType<ChatGPTClient>().currentPuzzle = this.gameObject;
+        FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
 
         string defaultCode ="";
 
@@ -56,7 +56,7 @@ public class ChestInteraction : MonoBehaviour
 
         chestOpened = true;
         codeWindow.Close();
-        FindObjectOfType<FeedbackUIManager>().ShowMessage("Chest solved!");
+        FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Chest solved!");
 
         if (chestAnimator != null)
         {
