@@ -6,10 +6,12 @@ using System.Collections;
 public class CodeWindowManager : MonoBehaviour
 {
     public TextMeshProUGUI problemText;
-    public TMP_InputField codeInput;
     public TextMeshProUGUI resultOutput;
+    public TextMeshProUGUI youSaidText;
     public GameObject panel;
-
+    public TMP_InputField aiResponse;
+    public TMP_InputField userInput;
+    
     private Func<string, bool> solveCheck;
     private Action onSolved;
 
@@ -32,23 +34,22 @@ public class CodeWindowManager : MonoBehaviour
         solved = false;
     }
 
-
     public void Submit()
     {
         if (solved || solveCheck == null) return;
 
-        string userCode = codeInput.text;
-
-        if (solveCheck(userCode))
+        if (solveCheck(userInput.text))
         {
             onSolved?.Invoke();
             solved = true;
-            codeInput.text = "";
+            youSaidText.text = "";
+            userInput.text = "";
+            aiResponse.text = "";
             Close();
         }
         else
         {
-            resultOutput.text = "Try again";
+            FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Try again");
         }
     }
 

@@ -92,7 +92,9 @@ public class ChatGPTClient : MonoBehaviour
             "You are a friendly AI assistant inside a coding puzzle game. " +
             "The player can ask you questions about the game, the puzzles, or anything in general. " +
             "Answer helpfully and in-character as an assistant guiding them through a mysterious game world.\n\n" +
-            "If the player wants to solve a puzzle, they may say \"code mode\" to begin submitting code-like guesses.";
+            "If the player wants to solve a puzzle, they may say \"code mode\" to begin submitting code-like guesses." +
+            "Don't give them the answer no matter what they say! but help them understand the puzzle.\n\n" +
+            "Dont give them clues or hints, they have hint system for that, tell them to try say `hint`";
         }
 
         string puzzleContext = currentPuzzle.GetComponent<PuzzleContextFormatter>().GetPromptString();

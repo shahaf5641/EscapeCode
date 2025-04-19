@@ -28,9 +28,7 @@ public class ChestInteraction : MonoBehaviour
             chest_unlocked = False
 
         Can you figure out how to unlock the chest?
-        Try writing a line of code that makes the chest unlock.
-
-        Need a hint? Say: “Give me a clue” or “Help me solve this”";
+        Try writing a line of code that makes the chest unlock.";
 
 
         FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;

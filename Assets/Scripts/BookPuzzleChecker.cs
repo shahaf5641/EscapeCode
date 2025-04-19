@@ -20,9 +20,7 @@ public class BookInteraction : MonoBehaviour
         What is the correct line of code to assign the secret_code variable
         with the final word?
         Use a line like:
-        secret_code = ""______""
-
-        Need a hint? Say: “Give me a clue” or “Help me solve this”";
+        secret_code = ""______""";
 
         FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
 

@@ -3,6 +3,9 @@ using System.Text;
 
 public class PuzzleContextFormatter : MonoBehaviour
 {
+    [HideInInspector]
+    public int NextHintIndex = 0;
+
     [TextArea(1, 10)]
     public string rawString; // Example: string = "T9a52D6am"
 
@@ -29,5 +32,13 @@ public class PuzzleContextFormatter : MonoBehaviour
         sb.AppendLine("Answer format: " + answerLine);
 
         return sb.ToString();
+    }
+
+    public string GetRandomHint()
+    {
+        if (hints == null || hints.Length == 0)
+            return "No hints available for this puzzle.";
+
+        return hints[UnityEngine.Random.Range(0, hints.Length)];
     }
 }

@@ -34,9 +34,7 @@ public class DoorInteraction : MonoBehaviour
             door_open = False
 
         Write a line assigning the correct value to 'answer':
-        answer = ______
-
-        Need a hint? Say: “Give me a clue” or “Help me solve this”";
+        answer = ______";
 
 
         FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;

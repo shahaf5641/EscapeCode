@@ -8,6 +8,8 @@ public class VoiceCommandManager : MonoBehaviour
     private bool isCoolingDown = false;
     public ChatGPTClient chatGPT;
     public CodeWindowManager codeWindow;
+    public TMPro.TextMeshProUGUI userTextDisplay;
+
 
     public void StartVoiceCommand()
     {
@@ -26,33 +28,65 @@ public class VoiceCommandManager : MonoBehaviour
         {
             string input = text.ToLower();
 
+            Debug.Log("Transcribed: " + input);
+            userTextDisplay.text = input;
+
+            if (IsHintRequested(input))
+            {
+                var puzzle = chatGPT.currentPuzzle.GetComponent<PuzzleContextFormatter>();
+
+                if (puzzle != null)
+                {
+                    if (puzzle.NextHintIndex < puzzle.hints.Length)
+                    {
+                        string nextHint = $"Hint {puzzle.NextHintIndex + 1}: {puzzle.hints[puzzle.NextHintIndex]}";
+                        codeWindow.resultOutput.text += $"\n{nextHint}";
+                        puzzle.NextHintIndex++;
+                    }
+                    else
+                    {
+                        FindFirstObjectByType<FeedbackUIManager>().ShowMessage("No More Hints Available");
+                    }
+                }
+
+                return;
+            }
+
             if (IsCodeModeActivation(input))
             {
                 chatGPT.isInCodeMode = true;
-                codeWindow.resultOutput.text = "Code Mode Activated";
+                FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Code Mode Activated");
                 return;
             }
 
             if (IsCodeModeDeactivation(input))
             {
                 chatGPT.isInCodeMode = false;
-                codeWindow.resultOutput.text = "Left Code Mode";
+                FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Left Code Mode");
                 return;
             }
 
-            Debug.Log("Transcribed: " + input);
-
             StartCoroutine(chatGPT.GetAIHelp(input, (response) =>
             {
-                codeWindow.codeInput.text = response;
+                if (chatGPT.isInCodeMode)
+                {
+                    codeWindow.userInput.text = response;
+                }
+                else
+                {
+                    codeWindow.aiResponse.text = response;
+                }
             }));
         }));
     }
-
     private IEnumerator Cooldown()
     {
         yield return new WaitForSeconds(1f); // 1 second cooldown
         isCoolingDown = false;
+    }
+    private bool IsHintRequested(string input)
+    {
+        return input.Contains("hint");
     }
 
     private bool IsCodeModeActivation(string input)
@@ -87,4 +121,28 @@ public class VoiceCommandManager : MonoBehaviour
 
         return false;
     }
+    public void TriggerHintManually()
+    {
+        if (IsHintRequested("hint"))
+        {
+            var puzzle = chatGPT.currentPuzzle.GetComponent<PuzzleContextFormatter>();
+
+            if (puzzle != null)
+            {
+                if (puzzle.NextHintIndex < puzzle.hints.Length)
+                {
+                    string nextHint = $"Hint {puzzle.NextHintIndex + 1}: {puzzle.hints[puzzle.NextHintIndex]}";
+                    codeWindow.resultOutput.text += $"\n{nextHint}";
+                    puzzle.NextHintIndex++;
+                }
+                else
+                {
+                    FindFirstObjectByType<FeedbackUIManager>().ShowMessage("No More Hints Available");
+                }
+            }
+
+            return;
+        }
+    }
+
 }
