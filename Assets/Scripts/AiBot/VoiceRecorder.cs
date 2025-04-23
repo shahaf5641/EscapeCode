@@ -22,7 +22,7 @@ public class VoiceRecorder : MonoBehaviour
             return;
         }
 
-        string selectedMic = Microphone.devices[1]; // try index 0 or 1
+        string selectedMic = Microphone.devices[0]; // try index 0 or 1
         Debug.Log("Using mic: " + selectedMic);
         recordedClip = Microphone.Start(selectedMic, false, 10, 44100);
         isRecording = true;

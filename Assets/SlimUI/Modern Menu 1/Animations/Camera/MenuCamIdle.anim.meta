@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ee2aff8ec94ed2c49847c042ca5f1379
+timeCreated: 1470881139
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 116144
+  packageName: 3D Modern Menu UI
+  packageVersion: 1.3.1
+  assetPath: Assets/SlimUI/Modern Menu 1/Animations/Camera/MenuCamIdle.anim
+  uploadId: 628808
