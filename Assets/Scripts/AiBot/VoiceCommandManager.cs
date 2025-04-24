@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 public class VoiceCommandManager : MonoBehaviour
 {
@@ -9,7 +10,25 @@ public class VoiceCommandManager : MonoBehaviour
     public ChatGPTClient chatGPT;
     public CodeWindowManager codeWindow;
     public TMPro.TextMeshProUGUI userTextDisplay;
+    public UnityEngine.UI.Button recordToggleButton;
+    public TMPro.TextMeshProUGUI recordToggleLabel;
+    private bool isRecording = false;
 
+    public void ToggleRecording()
+    {
+        if (!isRecording)
+        {
+            StartVoiceCommand();
+            recordToggleLabel.text = "Stop";
+            isRecording = true;
+        }
+        else
+        {
+            StopVoiceCommand();
+            recordToggleLabel.text = "Record";
+            isRecording = false;
+        }
+    }
 
     public void StartVoiceCommand()
     {
@@ -22,13 +41,11 @@ public class VoiceCommandManager : MonoBehaviour
 
         isCoolingDown = true;
         StartCoroutine(Cooldown());
-
         recorder.StopRecordingAndSave();
         StartCoroutine(transcriber.TranscribeAudio(recorder.GetSavedFilePath(), (text) =>
         {
             string input = text.ToLower();
-
-            Debug.Log("Transcribed: " + input);
+            input = new string(input.Where(c => !char.IsPunctuation(c)).ToArray());
             userTextDisplay.text = input;
 
             if (IsHintRequested(input))
@@ -48,7 +65,6 @@ public class VoiceCommandManager : MonoBehaviour
                         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("No More Hints Available");
                     }
                 }
-
                 return;
             }
 
@@ -65,7 +81,11 @@ public class VoiceCommandManager : MonoBehaviour
                 FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Left Code Mode");
                 return;
             }
-
+            if (IsSubmitRequested(input))
+            {
+                codeWindow.Submit();
+                return;
+            }
             StartCoroutine(chatGPT.GetAIHelp(input, (response) =>
             {
                 if (chatGPT.isInCodeMode)
@@ -79,11 +99,13 @@ public class VoiceCommandManager : MonoBehaviour
             }));
         }));
     }
+
     private IEnumerator Cooldown()
     {
-        yield return new WaitForSeconds(1f); // 1 second cooldown
+        yield return new WaitForSeconds(1f);
         isCoolingDown = false;
     }
+
     private bool IsHintRequested(string input)
     {
         return input.Contains("hint");
@@ -110,9 +132,8 @@ public class VoiceCommandManager : MonoBehaviour
     {
         string[] deactivationPhrases = new[]
         {
-            "exit code mode", "leave code mode", "stop coding", "exit coding", "normal mode"
+            "leave mode", "stop coding", "exit coding", "normal mode"
         };
-
         foreach (var phrase in deactivationPhrases)
         {
             if (input.Contains(phrase))
@@ -121,6 +142,7 @@ public class VoiceCommandManager : MonoBehaviour
 
         return false;
     }
+
     public void TriggerHintManually()
     {
         if (IsHintRequested("hint"))
@@ -140,9 +162,22 @@ public class VoiceCommandManager : MonoBehaviour
                     FindFirstObjectByType<FeedbackUIManager>().ShowMessage("No More Hints Available");
                 }
             }
-
             return;
         }
     }
+    private bool IsSubmitRequested(string input)
+    {
+        string[] submitPhrases = new[]
+        {
+            "submit", "submit answer", "submit code", "send code", "check", "check my answer", "submit my code"
+        };
 
+        foreach (var phrase in submitPhrases)
+        {
+            if (input.Contains(phrase))
+                return true;
+        }
+
+        return false;
+    }
 }
