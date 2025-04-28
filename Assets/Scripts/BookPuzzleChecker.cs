@@ -1,4 +1,4 @@
-using UnityEngine;
+ using UnityEngine;
 using System.Collections;
 
 public class BookInteraction : MonoBehaviour
@@ -6,6 +6,8 @@ public class BookInteraction : MonoBehaviour
     private bool isSolved = false;
     public CodeWindowManager codeWindow;
     public GameObject chestObject;
+    public string puzzleType = "book";
+
 
     void OnMouseDown()
     {

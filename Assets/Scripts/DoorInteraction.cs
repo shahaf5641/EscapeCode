@@ -1,10 +1,13 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class DoorInteraction : MonoBehaviour
 {
     public CodeWindowManager codeWindow;
     private bool doorOpened = false;
+    public string puzzleType = "door";
+
     void Start()
     {
         PuzzleState.pressedButton = false;
@@ -63,10 +66,15 @@ public class DoorInteraction : MonoBehaviour
         if (doorOpened) return;
         doorOpened = true;
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Room solved!");
+
+        // ✅ Start the delay to load next scene
+        StartCoroutine(LoadNextSceneAfterDelay());
     }
 
-    private IEnumerator DeactivateAfterDelay(float delay)
+    private IEnumerator LoadNextSceneAfterDelay()
     {
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSeconds(3f);
+        SceneManager.LoadScene("SecondRoomScene");
+
     }
 }

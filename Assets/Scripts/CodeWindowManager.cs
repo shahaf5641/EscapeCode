@@ -11,24 +11,36 @@ public class CodeWindowManager : MonoBehaviour
     public GameObject panel;
     public TMP_InputField aiResponse;
     public TMP_InputField userInput;
+    private PuzzleContextFormatter lastPuzzleFormatter = null;
+
     
     private Func<string, bool> solveCheck;
     private Action onSolved;
 
     private bool solved = false;
 
-    public void Open(string problemDescription, string defaultCode, Func<string, bool> checkFunc, Action successCallback)
+public void Open(string problemDescription, string defaultCode, Func<string, bool> checkFunc, Action successCallback)
+{
+    panel.SetActive(true);
+    PlayerController.IsMovementLocked = true;
+
+    if (FindFirstObjectByType<ChatGPTClient>().currentPuzzle.TryGetComponent(out PuzzleContextFormatter currentPuzzleFormatter))
     {
-        panel.SetActive(true);
-        PlayerController.IsMovementLocked = true;
-        StartCoroutine(SetContentDelayed(problemDescription, defaultCode, checkFunc, successCallback));
+        if (lastPuzzleFormatter != currentPuzzleFormatter)
+        {
+            currentPuzzleFormatter.NextHintIndex = 0; // ✅ Only reset if different puzzle
+            lastPuzzleFormatter = currentPuzzleFormatter; // ✅ Update the last opened
+        }
     }
+
+    StartCoroutine(SetContentDelayed(problemDescription, defaultCode, checkFunc, successCallback));
+}
+
 
     private IEnumerator SetContentDelayed(string problemDescription, string defaultCode, Func<string, bool> checkFunc, Action successCallback)
     {
         yield return null;
         problemText.text = problemDescription;
-        resultOutput.text = "";
         solveCheck = checkFunc;
         onSolved = successCallback;
         solved = false;
@@ -45,6 +57,8 @@ public class CodeWindowManager : MonoBehaviour
             youSaidText.text = "";
             userInput.text = "";
             aiResponse.text = "";
+            resultOutput.text = "";
+            FindFirstObjectByType<ChatGPTClient>().isInCodeMode = false;
             Close();
         }
         else

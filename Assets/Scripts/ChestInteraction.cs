@@ -6,6 +6,8 @@ public class ChestInteraction : MonoBehaviour
     public CodeWindowManager codeWindow;
     public Animator chestAnimator;
     public GameObject keyObject;
+    public string puzzleType = "chest";
+
 
     private bool chestOpened = false;
 
