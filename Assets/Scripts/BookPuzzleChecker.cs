@@ -7,6 +7,9 @@ public class BookInteraction : MonoBehaviour
     public CodeWindowManager codeWindow;
     public GameObject chestObject;
     public string puzzleType = "book";
+    public Unity.Cinemachine.CinemachineCamera chestCam;
+    public Unity.Cinemachine.CinemachineCamera playerCam;
+
 
 
     void OnMouseDown()
@@ -44,19 +47,34 @@ public class BookInteraction : MonoBehaviour
     private void OnBookSolved()
     {
         isSolved = true;
+
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Book solved!");
+
         if (chestObject != null)
         {
             chestObject.SetActive(true);
             Animator chestAnim = chestObject.GetComponent<Animator>();
+            // You can optionally play the chest opening animation here
         }
-            StartCoroutine(DeactivateAfterDelay(3f));
-        }
-    
-        private IEnumerator DeactivateAfterDelay(float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            gameObject.SetActive(false);
+
+        chestCam.Priority = 20;     // Focus on chest
+        playerCam.Priority = 10;    // Keep player cam lower
+
+        StartCoroutine(WaitAndReturnCamera());
+        StartCoroutine(DeactivateAfterDelay(3f));
     }
 
+    private IEnumerator WaitAndReturnCamera()
+    {
+        yield return new WaitForSeconds(3f);
+
+        chestCam.Priority = 5;      // Lower chest cam priority
+        playerCam.Priority = 15;    // Reactivate player cam
+    }
+
+    private IEnumerator DeactivateAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        gameObject.SetActive(false);
+    }
 }
