@@ -72,13 +72,15 @@ public class VoiceCommandManager : MonoBehaviour
             {
                 chatGPT.isInCodeMode = true;
                 FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Code Mode Activated");
+                codeWindow.EnableCodeMode();
                 return;
             }
 
             if (IsCodeModeDeactivation(input))
             {
                 chatGPT.isInCodeMode = false;
-                FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Left Code Mode");
+                FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Normal Mode Activated");
+                codeWindow.DisableCodeMode();
                 return;
             }
             if (IsSubmitRequested(input))
@@ -115,7 +117,7 @@ public class VoiceCommandManager : MonoBehaviour
     {
         string[] activationPhrases = new[]
         {
-            "code mode", "codemode", "cod mod", "cowd mode", "cold mode", "coat mode", "codemood", "cowed mode",
+            "code mode", "codemode", "codmode", "codmod", "cod mod", "cowd mode", "cold mode", "coat mode", "codemood", "cowed mode",
             "start coding", "coding mode", "i want to guess"
         };
 

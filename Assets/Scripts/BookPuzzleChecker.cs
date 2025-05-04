@@ -14,8 +14,8 @@ public class BookInteraction : MonoBehaviour
 
     void OnMouseDown()
     {
-
-    if (isSolved || codeWindow == null) return;
+        PlayerController.IsMovementLocked = true;
+        if (isSolved || codeWindow == null) return;
         string problemText =
         @"The Secret Code
         
