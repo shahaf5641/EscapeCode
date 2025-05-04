@@ -46,8 +46,6 @@ public class VoiceCommandManager : MonoBehaviour
         {
             string input = text.ToLower();
             input = new string(input.Where(c => !char.IsPunctuation(c)).ToArray());
-            userTextDisplay.text = input;
-
             if (IsHintRequested(input))
             {
                 var puzzle = chatGPT.currentPuzzle.GetComponent<PuzzleContextFormatter>();
@@ -96,7 +94,7 @@ public class VoiceCommandManager : MonoBehaviour
                 }
                 else
                 {
-                    codeWindow.aiResponse.text = response;
+                    codeWindow.AppendChatLine(input, response);
                 }
             }));
         }));

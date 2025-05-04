@@ -2,14 +2,14 @@ using UnityEngine;
 using TMPro;
 using System;
 using System.Collections;
+using UnityEngine.UI;
 
 public class CodeWindowManager : MonoBehaviour
 {
     public TextMeshProUGUI problemText;
     public TextMeshProUGUI resultOutput;
-    public TextMeshProUGUI youSaidText;
+    public TextMeshProUGUI chatHistoryDisplay;
     public GameObject panel;
-    public TMP_InputField aiResponse;
     public TMP_InputField userInput;
     private PuzzleContextFormatter lastPuzzleFormatter = null;
     private Func<string, bool> solveCheck;
@@ -20,6 +20,9 @@ public class CodeWindowManager : MonoBehaviour
     public RectTransform modeCircle;
     public Vector3 onLocalPos;
     public Vector3 offLocalPos;
+    private string fullChatLog = "";
+    [SerializeField] private ScrollRect chatScrollRect;
+
 
     void Start()
     {
@@ -84,10 +87,15 @@ public class CodeWindowManager : MonoBehaviour
         {
             onSolved?.Invoke();
             solved = true;
-            youSaidText.text = "";
+            chatHistoryDisplay.text = "";
+            fullChatLog = "";
             userInput.text = "";
-            aiResponse.text = "";
             resultOutput.text = "";
+            switcher2.OnValueChangedNullable -= OnSwitcherValueChanged;
+            switcher2.isOnNullable = false;
+            if (modeCircle != null)
+                modeCircle.localPosition = offLocalPos;
+            switcher2.OnValueChangedNullable += OnSwitcherValueChanged;
             FindFirstObjectByType<ChatGPTClient>().isInCodeMode = false;
             Close();
         }
@@ -112,4 +120,14 @@ public class CodeWindowManager : MonoBehaviour
         bool current = switcher2.isOnNullable ?? false;
         switcher2.isOnNullable = !current;
     }
+    public void AppendChatLine(string userMessage, string aiMessage)
+    {
+        fullChatLog += $"<color=#00c3ff><b>YOU:</b></color> {userMessage}\n<color=#ffc300><b>AI:</b></color> {aiMessage}\n\n";
+        chatHistoryDisplay.text = fullChatLog;
+
+        // Scroll to bottom after canvas updates
+        Canvas.ForceUpdateCanvases();
+        chatScrollRect.verticalNormalizedPosition = 0f;
+    }
+
 }
