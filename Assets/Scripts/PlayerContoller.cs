@@ -12,10 +12,13 @@ public class PlayerController : MonoBehaviour
     CustomActions input;
     NavMeshAgent agent;
     Animator animator;
+
     [Header("Movement")]
     [SerializeField] ParticleSystem clickEffect;
+    private ParticleSystem currentClickEffect;
     [SerializeField] LayerMask clickableLayers;
-    float lookRotationSpeed = 8f;
+    float lookRotationSpeed = 4f;
+
     void Awake()
     {
         IsMovementLocked = false;
@@ -29,6 +32,7 @@ public class PlayerController : MonoBehaviour
     {
         input.Main.Move.performed += ctx => ClickToMove();
     }
+
     void ClickToMove()
     {
         if (IsMovementLocked) return;
@@ -38,32 +42,35 @@ public class PlayerController : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            // ✅ Check if this hit object is interactable
-            if (hit.collider.GetComponent<BookInteraction>() != null ||
-                hit.collider.GetComponent<ChestInteraction>() != null)
+            if (hit.collider.CompareTag("WorldClickable"))
             {
-                Debug.Log("Click on interactable. Skipping movement.");
-                return; // Don't move!
+                return;
             }
         }
 
-        // ✅ If no interactable hit, use the FIRST hit for movement
         if (hits.Length > 0)
         {
             RaycastHit moveHit = hits[0];
             agent.destination = moveHit.point;
 
+            // ❌ Destroy previous effect if exists
+            if (currentClickEffect != null)
+            {
+                Destroy(currentClickEffect.gameObject);
+            }
+
+            // ✅ Spawn new effect and keep reference
             if (clickEffect != null)
             {
-                Instantiate(clickEffect, moveHit.point + new Vector3(0, 0.1f, 0), clickEffect.transform.rotation);
+                currentClickEffect = Instantiate(clickEffect, moveHit.point + Vector3.up * 0.1f, Quaternion.identity);
             }
         }
     }
-
     void OnEnable()
     {
         input.Enable();
     }
+
     void OnDisable()
     {
         input.Disable();
@@ -73,7 +80,13 @@ public class PlayerController : MonoBehaviour
     {
         FaceTarget();
         SetAnimations();
+        if (currentClickEffect != null && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+        {
+            Destroy(currentClickEffect.gameObject);
+            currentClickEffect = null;
+        }
     }
+
     void FaceTarget()
     {
         Vector3 direction = (agent.steeringTarget - transform.position).normalized;
@@ -89,14 +102,12 @@ public class PlayerController : MonoBehaviour
     {
         if (agent == null)
         {
-            Debug.LogError("NavMeshAgent is missing on Player!");
             return;
         }
 
         if (agent.velocity == Vector3.zero)
         {
             animator.Play(IDLE);
-
         }
         else
         {

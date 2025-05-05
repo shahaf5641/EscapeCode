@@ -56,7 +56,8 @@ public class ChestInteraction : MonoBehaviour
 
         chestOpened = true;
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Chest solved!");
-
+        gameObject.tag = "Untagged";
+        gameObject.layer = LayerMask.NameToLayer("Default");
         if (chestAnimator != null)
         {
             chestAnimator.SetTrigger("Open");

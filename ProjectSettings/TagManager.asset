@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 3
   tags:
   - Chest
+  - Clickable
+  - PlayButton
+  - WorldClickable
+  - UIClickable
   layers:
   - Default
   - TransparentFX

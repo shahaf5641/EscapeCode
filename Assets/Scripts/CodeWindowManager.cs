@@ -22,8 +22,7 @@ public class CodeWindowManager : MonoBehaviour
     public Vector3 offLocalPos;
     private string fullChatLog = "";
     [SerializeField] private ScrollRect chatScrollRect;
-
-
+    public static bool IsOpen { get; private set; }
     void Start()
     {
         switcher2.isOnNullable = false; // Set visual state to OFF
@@ -54,6 +53,7 @@ public class CodeWindowManager : MonoBehaviour
 
     public void Open(string problemDescription, string defaultCode, Func<string, bool> checkFunc, Action successCallback)
     {
+        IsOpen = true;
         panel.SetActive(true);
         PlayerController.IsMovementLocked = true;
 
@@ -109,6 +109,7 @@ public class CodeWindowManager : MonoBehaviour
     {
         panel.SetActive(false);
         PlayerController.IsMovementLocked = false;
+        IsOpen = false;
     }
 
     public void EnableCodeMode() => switcher2.isOnNullable = true;

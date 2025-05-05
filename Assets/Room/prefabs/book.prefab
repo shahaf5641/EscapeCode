@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 1351562290461016448}
   m_Layer: 8
   m_Name: book
-  m_TagString: Untagged
+  m_TagString: WorldClickable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -109,7 +109,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.5794721, y: 0.11041435, z: 0.9189666}
+  m_Size: {x: 0.64, y: 0.23, z: 1.04}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5480440418454982402
 MonoBehaviour:
@@ -125,6 +125,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   codeWindow: {fileID: 0}
   chestObject: {fileID: 0}
+  puzzleType: book
+  chestCam: {fileID: 0}
+  playerCam: {fileID: 0}
 --- !u!114 &1351562290461016448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,11 +140,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1c86e5363a597144907572c201b2c97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rawString: 'string = "T9a52D6am"\nsecret_code = string[0] + string[2] + string[5]
+  NextHintIndex: 0
+  rawString: 'string = "t9a52d6am"\nsecret_code = string[0] + string[2] + string[5]
     + string[7] + string[8]'
   hints:
-  - "You\u2019ve found a strange encrypted string: \"T9a52D6am\""
+  - "You\u2019ve found a strange string: \"t9a52d6am\""
   - The code you need is hidden within it
   - Look at the indexes used
   - The final code is 5 letters long, with no numbers
-  answerLine: secret_code = "TaDam"
+  answerLine: secret_code = "tadam"
