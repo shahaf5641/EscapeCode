@@ -12,13 +12,12 @@ public class PlayerController : MonoBehaviour
     CustomActions input;
     NavMeshAgent agent;
     Animator animator;
-
+    [SerializeField] private AudioSource clickSound;
     [Header("Movement")]
     [SerializeField] ParticleSystem clickEffect;
     private ParticleSystem currentClickEffect;
     [SerializeField] LayerMask clickableLayers;
     float lookRotationSpeed = 4f;
-
     void Awake()
     {
         IsMovementLocked = false;
@@ -44,6 +43,8 @@ public class PlayerController : MonoBehaviour
         {
             if (hit.collider.CompareTag("WorldClickable"))
             {
+                if (clickSound != null)
+                    clickSound.PlayOneShot(clickSound.clip);
                 return;
             }
         }
