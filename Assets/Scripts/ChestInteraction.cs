@@ -7,8 +7,7 @@ public class ChestInteraction : MonoBehaviour
     public Animator chestAnimator;
     public GameObject keyObject;
     public string puzzleType = "chest";
-
-
+    [SerializeField] private AudioSource successSound;
     private bool chestOpened = false;
 
     void OnMouseDown()
@@ -53,7 +52,7 @@ public class ChestInteraction : MonoBehaviour
     private void OnChestSolved()
     {
         if (chestOpened) return;
-
+        successSound.PlayOneShot(successSound.clip);
         chestOpened = true;
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Chest solved!");
         gameObject.tag = "Untagged";

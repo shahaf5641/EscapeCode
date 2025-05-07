@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
-
 public class PlayerController : MonoBehaviour
 {
     public static bool IsMovementLocked = false;
@@ -12,12 +11,15 @@ public class PlayerController : MonoBehaviour
     CustomActions input;
     NavMeshAgent agent;
     Animator animator;
+
     [SerializeField] private AudioSource clickSound;
+
     [Header("Movement")]
     [SerializeField] ParticleSystem clickEffect;
     private ParticleSystem currentClickEffect;
     [SerializeField] LayerMask clickableLayers;
-    float lookRotationSpeed = 4f;
+    float lookRotationSpeed = 2f;
+
     void Awake()
     {
         IsMovementLocked = false;
@@ -54,19 +56,18 @@ public class PlayerController : MonoBehaviour
             RaycastHit moveHit = hits[0];
             agent.destination = moveHit.point;
 
-            // ❌ Destroy previous effect if exists
             if (currentClickEffect != null)
             {
                 Destroy(currentClickEffect.gameObject);
             }
 
-            // ✅ Spawn new effect and keep reference
             if (clickEffect != null)
             {
                 currentClickEffect = Instantiate(clickEffect, moveHit.point + Vector3.up * 0.1f, Quaternion.identity);
             }
         }
     }
+
     void OnEnable()
     {
         input.Enable();
@@ -81,6 +82,7 @@ public class PlayerController : MonoBehaviour
     {
         FaceTarget();
         SetAnimations();
+
         if (currentClickEffect != null && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
             Destroy(currentClickEffect.gameObject);
@@ -101,18 +103,11 @@ public class PlayerController : MonoBehaviour
 
     void SetAnimations()
     {
-        if (agent == null)
-        {
-            return;
-        }
+        if (agent == null) return;
 
         if (agent.velocity == Vector3.zero)
-        {
             animator.Play(IDLE);
-        }
         else
-        {
             animator.Play(WALK);
-        }
     }
 }

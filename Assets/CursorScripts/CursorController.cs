@@ -11,8 +11,9 @@ namespace Christina.CustomCursor
         [SerializeField] private Texture2D cursorTextureClickable;
         [SerializeField] private Vector2 clickPosition = Vector2.zero;
         [SerializeField] private LayerMask clickableLayers;
+
         private Texture2D currentCursor;
-        [SerializeField] private AudioSource clickSound;
+
         void Update()
         {
             // ✅ Always allow hover for UI buttons
@@ -41,15 +42,17 @@ namespace Christina.CustomCursor
                     return;
                 }
             }
+
             SetCursor(cursorTextureDefault);
-            CheckClick();
         }
+
         private void SetCursor(Texture2D texture)
         {
             if (currentCursor == texture) return;
             Cursor.SetCursor(texture, clickPosition, CursorMode.Auto);
             currentCursor = texture;
         }
+
         private bool IsPointerOverClickableUI()
         {
             PointerEventData pointerData = new PointerEventData(EventSystem.current);
@@ -67,38 +70,6 @@ namespace Christina.CustomCursor
             }
 
             return false;
-        }
-        private void CheckClick()
-        {
-            if (!Input.GetMouseButtonDown(0)) return;
-
-            // ✅ UI Click
-            if (IsPointerOverClickableUI())
-            {
-                PlayClickSound();
-                return;
-            }
-
-            // ❌ Block world click if CodeWindow is open
-            if (CodeWindowManager.IsOpen) return;
-
-            // ✅ World Click via Physics.Raycast
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f, clickableLayers))
-            {
-                if (hit.collider.CompareTag("WorldClickable"))
-                {
-                    PlayClickSound();
-                }
-            }
-        }
-
-        private void PlayClickSound()
-        {
-            if (clickSound != null)
-            {
-                clickSound.PlayOneShot(clickSound.clip);
-            }
         }
     }
 }

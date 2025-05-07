@@ -9,8 +9,7 @@ public class BookInteraction : MonoBehaviour
     public string puzzleType = "book";
     public Unity.Cinemachine.CinemachineCamera chestCam;
     public Unity.Cinemachine.CinemachineCamera playerCam;
-
-
+    [SerializeField] private AudioSource successSound;
 
     void OnMouseDown()
     {
@@ -47,14 +46,12 @@ public class BookInteraction : MonoBehaviour
     private void OnBookSolved()
     {
         isSolved = true;
-
+        successSound.PlayOneShot(successSound.clip);
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Book solved!");
-
         if (chestObject != null)
         {
             chestObject.SetActive(true);
             Animator chestAnim = chestObject.GetComponent<Animator>();
-            // You can optionally play the chest opening animation here
         }
 
         chestCam.Priority = 20;     // Focus on chest

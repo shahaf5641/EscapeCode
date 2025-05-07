@@ -7,7 +7,7 @@ public class DoorInteraction : MonoBehaviour
     public CodeWindowManager codeWindow;
     private bool doorOpened = false;
     public string puzzleType = "door";
-
+    [SerializeField] private AudioSource successSound;
     void Start()
     {
         PuzzleState.pressedButton = false;
@@ -64,6 +64,7 @@ public class DoorInteraction : MonoBehaviour
     private void OnDoorSolved()
     {
         if (doorOpened) return;
+        successSound.PlayOneShot(successSound.clip);
         doorOpened = true;
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Room solved!");
 

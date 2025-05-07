@@ -22,6 +22,7 @@ public class CodeWindowManager : MonoBehaviour
     public Vector3 offLocalPos;
     private string fullChatLog = "";
     [SerializeField] private ScrollRect chatScrollRect;
+
     public static bool IsOpen { get; private set; }
     void Start()
     {
@@ -104,7 +105,6 @@ public class CodeWindowManager : MonoBehaviour
             FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Try again");
         }
     }
-
     public void Close()
     {
         panel.SetActive(false);
@@ -130,5 +130,4 @@ public class CodeWindowManager : MonoBehaviour
         Canvas.ForceUpdateCanvases();
         chatScrollRect.verticalNormalizedPosition = 0f;
     }
-
 }

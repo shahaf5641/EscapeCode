@@ -272,9 +272,9 @@ GameObject:
   - component: {fileID: 7866996632760836759}
   - component: {fileID: 255594392230643308}
   - component: {fileID: 6857339447294434125}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: Text (TMP)
-  m_TagString: Untagged
+  m_TagString: Clickable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -406,7 +406,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2981329499988035019}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: TipHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1105,9 +1105,9 @@ GameObject:
   - component: {fileID: 8411626363486618527}
   - component: {fileID: 37990799928002812}
   - component: {fileID: 8256660900454849057}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: SubmitButton
-  m_TagString: Clickable
+  m_TagString: UIClickable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1689,9 +1689,9 @@ GameObject:
   - component: {fileID: 7711120344165654414}
   - component: {fileID: 4471052421932928490}
   - component: {fileID: 5025418991893421220}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: Get Hint
-  m_TagString: Clickable
+  m_TagString: UIClickable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2219,9 +2219,9 @@ GameObject:
   - component: {fileID: 6947967721604799642}
   - component: {fileID: 3069986448172718914}
   - component: {fileID: 4461657133276700717}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: CloseButton
-  m_TagString: Clickable
+  m_TagString: UIClickable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2426,7 +2426,7 @@ GameObject:
   - component: {fileID: 1204754775263720215}
   - component: {fileID: 3280067853558485821}
   - component: {fileID: 4850667032760647809}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2764,7 +2764,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1039077564704913734}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3011,7 +3011,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8294044816626636717}
   - component: {fileID: 1086278066852444133}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: Back
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3259,7 +3259,7 @@ GameObject:
   - component: {fileID: 7312722249550035576}
   - component: {fileID: 4909600352121388060}
   - component: {fileID: 1493982523785759845}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3471,9 +3471,9 @@ GameObject:
   - component: {fileID: 5266963808264248075}
   - component: {fileID: 4113084853794750171}
   - component: {fileID: 6950687214988355508}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: ButtonLabel
-  m_TagString: Clickable
+  m_TagString: UIClickable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3603,9 +3603,9 @@ GameObject:
   - component: {fileID: 8469820665897156302}
   - component: {fileID: 9052792387449387680}
   - component: {fileID: 5487148772220091000}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: BackgroundImage
-  m_TagString: Untagged
+  m_TagString: UIClickable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3678,9 +3678,9 @@ GameObject:
   - component: {fileID: 8294325116428010564}
   - component: {fileID: 3833517929557392046}
   - component: {fileID: 6200541199724067135}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: Text (TMP)
-  m_TagString: Untagged
+  m_TagString: Clickable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3813,9 +3813,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1837270682936000901}
   - component: {fileID: 5411292430899036263}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: Switcher2
-  m_TagString: Clickable
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4020,7 +4020,7 @@ GameObject:
   - component: {fileID: 8679983598951478003}
   - component: {fileID: 3320029832903198702}
   - component: {fileID: 2502641803143588475}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4498,7 +4498,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 620624271730486094}
   m_HandleRect: {fileID: 4786543845320539189}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4515,7 +4515,7 @@ GameObject:
   - component: {fileID: 8726046039330809366}
   - component: {fileID: 5596265254275062317}
   - component: {fileID: 423650693955649139}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: Tip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
