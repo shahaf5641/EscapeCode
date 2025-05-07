@@ -19,14 +19,9 @@ public class ChestInteraction : MonoBehaviour
 
         chest_locked = True
         has_key_code = False
-        
+
         if has_key_code:
             chest_locked = False
-
-        if chest_locked == False:
-            chest_unlocked = True
-        else:
-            chest_unlocked = False
 
         Can you figure out how to unlock the chest?
         Try writing a line of code that makes the chest unlock.";
