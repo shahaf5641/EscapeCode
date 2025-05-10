@@ -126,7 +126,6 @@ public class ChatGPTClient : MonoBehaviour
             onResponse(parsed.choices[0].message.content);
         }
     }
-
     private string GetDynamicExamples(string puzzleType)
     {
         switch (puzzleType.ToLower())
@@ -158,11 +157,25 @@ public class ChatGPTClient : MonoBehaviour
                     "Player: entered code equals ten\n" +
                     "You: entered_code = 10\n\n";
 
+            case "laptop":
+                return
+                    "Player: status equals true\n" +
+                    "You: status == True:\n\n" +
+                    "Player: status equals\n" +
+                    "You: status = :\n\n" +
+                    "Player: status euals false \n" +
+                    "You: status == False \n\n";
+
+            case "password":
+                return
+                    "Player: zero\n" +
+                    "You: 0:\n\n" +
+                    "Player: equals zero\n" +
+                    "You: 0:\n\n";
             default:
                 return "";
         }
     }
-
 }
 
 [System.Serializable]
