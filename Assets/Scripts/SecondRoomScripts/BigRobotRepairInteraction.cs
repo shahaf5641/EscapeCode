@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class BigRobotRepairInteraction : MonoBehaviour
 {
     [SerializeField] private CodeWindowManager codeWindow;
     [SerializeField] private AudioSource activationSound;
     [SerializeField] private Animator bigRobotAnimator;
+    [SerializeField] private GameObject bigRobot;
     private bool isSolved = false;
     public string puzzleType = "robot";
 
@@ -57,6 +59,19 @@ public class BigRobotRepairInteraction : MonoBehaviour
 
         if (bigRobotAnimator != null)
             bigRobotAnimator.SetTrigger("Walk");
-        FindFirstObjectByType<FeedbackUIManager>()?.ShowMessage("Robot Activated. Navigation restored.");
+        FindFirstObjectByType<FeedbackUIManager>()?.ShowMessage("Navigation System Restored.");
+        if (GameObject.Find("CM vcam1").TryGetComponent<Unity.Cinemachine.CinemachineCamera>(out var vcam))
+        {
+            vcam.Follow = bigRobot.transform;
+            vcam.LookAt = bigRobot.transform;
+        }
+        FindFirstObjectByType<PlayerController>().enabled = false;
+        bigRobot.GetComponent<BigRobotController>().enabled = true;
+        bigRobot.GetComponent<NavMeshAgent>().enabled = true;
+        bigRobot.GetComponent<NavMeshObstacle>().enabled = false;
+        bigRobot.GetComponent<BoxCollider>().enabled = false;
+        var player = GameObject.FindWithTag("Player");
+        player.SetActive(false);
+
     }
 }
