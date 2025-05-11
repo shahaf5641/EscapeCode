@@ -172,6 +172,14 @@ public class ChatGPTClient : MonoBehaviour
                     "You: 0:\n\n" +
                     "Player: equals zero\n" +
                     "You: 0:\n\n";
+            case "robot":
+                return
+                "Player: second sensor equals\n" +
+                "You: second_sensor = \n\n" +
+                "Player: second sensor i equals\n" +
+                "You: second_sensor[i] = \n\n" +
+                "Player: log append second senor i\n" +
+                "You: log.append(second_sensor[i])\n\n";
             default:
                 return "";
         }

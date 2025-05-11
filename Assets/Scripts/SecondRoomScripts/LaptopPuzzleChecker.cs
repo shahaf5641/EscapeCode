@@ -45,8 +45,11 @@ public class LaptopInteraction : MonoBehaviour
     {
         isSolved = true;
         successSound.PlayOneShot(successSound.clip);
-        FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Laptop solved!");
+        FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Message sent!");
         var collider = passwordPanel.GetComponent<BoxCollider>();
+        var thisCollider = GetComponent<BoxCollider>();
+        if (thisCollider != null)
+            thisCollider.enabled = false;
         if (collider != null)
             collider.enabled = true;
         sphereRobotCam.Priority = 20; 

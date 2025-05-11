@@ -7,8 +7,6 @@ public class PasswordSphereeInteraction : MonoBehaviour
     public CodeWindowManager codeWindow;
     public string puzzleType = "password";
     [SerializeField] private AudioSource successSound;
-    public Unity.Cinemachine.CinemachineCamera sphereRobotCam;
-    public Unity.Cinemachine.CinemachineCamera playerCam;
     [SerializeField] private GameObject handRailToDisable;
 
 
@@ -54,11 +52,12 @@ public class PasswordSphereeInteraction : MonoBehaviour
     private void OnPasswordSolved()
     {
         isSolved = true;
-
+                var thisCollider = GetComponent<BoxCollider>();
+        if (thisCollider != null)
+            thisCollider.enabled = false;
         if (successSound != null && successSound.clip != null)
             successSound.PlayOneShot(successSound.clip);
         handRailToDisable.SetActive(false);
-
         FindFirstObjectByType<FeedbackUIManager>()?.ShowMessage("Robot Activated!");
         FindFirstObjectByType<RobotSphereController>()?.StartRollingToTarget();
         DeactivateAfterDelay(2f);
