@@ -11,8 +11,8 @@ public class PlayerController : MonoBehaviour
     CustomActions input;
     NavMeshAgent agent;
     Animator animator;
-
-    [SerializeField] private AudioSource clickSound;
+    private bool isWalking = false;
+    [SerializeField] private AudioSource walkLoopSound;
 
     [Header("Movement")]
     [SerializeField] ParticleSystem clickEffect;
@@ -45,8 +45,6 @@ public class PlayerController : MonoBehaviour
         {
             if (hit.collider.CompareTag("WorldClickable"))
             {
-                if (clickSound != null)
-                    clickSound.PlayOneShot(clickSound.clip);
                 return;
             }
         }
@@ -105,9 +103,23 @@ public class PlayerController : MonoBehaviour
     {
         if (agent == null) return;
 
-        if (agent.velocity == Vector3.zero)
-            animator.Play(IDLE);
-        else
+        bool shouldWalk = agent.velocity.sqrMagnitude > 0.1f;
+
+        if (shouldWalk && !isWalking)
+        {
             animator.Play(WALK);
+            isWalking = true;
+
+            if (walkLoopSound != null && !walkLoopSound.isPlaying)
+                walkLoopSound.Play();
+        }
+        else if (!shouldWalk && isWalking)
+        {
+            animator.Play(IDLE);
+            isWalking = false;
+
+            if (walkLoopSound != null && walkLoopSound.isPlaying)
+                walkLoopSound.Stop();
+        }
     }
 }

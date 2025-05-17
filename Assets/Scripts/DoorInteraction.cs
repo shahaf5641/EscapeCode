@@ -67,7 +67,7 @@ public class DoorInteraction : MonoBehaviour
         successSound.PlayOneShot(successSound.clip);
         doorOpened = true;
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Room solved!");
-
+        gameObject.GetComponent<BoxCollider>().enabled = false;
         // ✅ Start the delay to load next scene
         StartCoroutine(LoadNextSceneAfterDelay());
     }
@@ -76,6 +76,5 @@ public class DoorInteraction : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
         SceneManager.LoadScene("SecondRoomScene");
-
     }
 }

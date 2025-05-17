@@ -23,6 +23,7 @@ public class PressableButton : MonoBehaviour
 
             rend.material = greenMaterial; // Change to green
             FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Button pressed!");
+            gameObject.GetComponent<BoxCollider>().enabled = false;
         }
     }
 }

@@ -8,8 +8,6 @@ public class FloatingKeyPickup : MonoBehaviour
     public GameObject chestToHide;
     public GameObject buttonToReveal;
     public Collider doorCollider;
-
-
     private Vector3 startPos;
 
     void Start()
@@ -29,13 +27,21 @@ public class FloatingKeyPickup : MonoBehaviour
 
     void OnMouseDown()
     {
+        
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Key picked up!");
+        gameObject.GetComponent<BoxCollider>().enabled = false;
+
         Invoke(nameof(HideChest), 3f);
-        gameObject.SetActive(false);
+        Invoke(nameof(DisableKey), 0.5f);
         KeyInventory.HasKey = true;
         buttonToReveal.SetActive(true);
         doorCollider.enabled = true;
     }
+    private void DisableKey()
+    {
+        gameObject.SetActive(false);
+    }
+
 
     private void HideChest()
     {

@@ -49,6 +49,8 @@ public class ChestInteraction : MonoBehaviour
         if (chestOpened) return;
         successSound.PlayOneShot(successSound.clip);
         chestOpened = true;
+        gameObject.GetComponent<BoxCollider>().enabled = false;
+
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Chest solved!");
         gameObject.tag = "Untagged";
         gameObject.layer = LayerMask.NameToLayer("Default");

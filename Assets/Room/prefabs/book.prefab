@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5480440418454982402}
   - component: {fileID: 1351562290461016448}
   - component: {fileID: 1273781510004596733}
+  - component: {fileID: 8355856969012317901}
   m_Layer: 8
   m_Name: book
   m_TagString: WorldClickable
@@ -248,3 +249,16 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8355856969012317901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067853811198812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69f2eb13e87434a49ac6462b08aa5f5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickSound: {fileID: 8300000, guid: 38925787ad0b33a4ea5207f182921b01, type: 3}

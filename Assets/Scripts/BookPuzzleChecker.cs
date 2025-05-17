@@ -10,6 +10,10 @@ public class BookInteraction : MonoBehaviour
     public Unity.Cinemachine.CinemachineCamera chestCam;
     public Unity.Cinemachine.CinemachineCamera playerCam;
     [SerializeField] private AudioSource successSound;
+    [SerializeField] private AudioClip chestFallSound;
+    [SerializeField] private AudioSource audioSource;
+
+
 
     void OnMouseDown()
     {
@@ -48,11 +52,13 @@ public class BookInteraction : MonoBehaviour
         isSolved = true;
         successSound.PlayOneShot(successSound.clip);
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Book solved!");
+        audioSource.PlayOneShot(chestFallSound);
         if (chestObject != null)
         {
             chestObject.SetActive(true);
             Animator chestAnim = chestObject.GetComponent<Animator>();
         }
+        gameObject.GetComponent<BoxCollider>().enabled = false;
 
         chestCam.Priority = 20;     // Focus on chest
         playerCam.Priority = 10;    // Keep player cam lower
