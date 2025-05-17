@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,6 +8,10 @@ public class BigRobotRepairInteraction : MonoBehaviour
     [SerializeField] private AudioSource activationSound;
     [SerializeField] private Animator bigRobotAnimator;
     [SerializeField] private GameObject bigRobot;
+    [SerializeField] private Unity.Cinemachine.CinemachineCamera robotFocusCam;
+    [SerializeField] private Unity.Cinemachine.CinemachineCamera robotGameplayCam;
+    [SerializeField] private Transform robotTargetPoint;
+    [SerializeField] private BoxCollider finalDoorCollider;
     private bool isSolved = false;
     public string puzzleType = "robot";
 
@@ -49,29 +54,53 @@ public class BigRobotRepairInteraction : MonoBehaviour
     {
         return userCode.Equals("log.append(second_sensor[i])");
     }
-
     private void OnSolved()
     {
         isSolved = true;
-
+        finalDoorCollider.enabled = true;
         if (activationSound != null && activationSound.clip != null)
             activationSound.Play();
 
         if (bigRobotAnimator != null)
             bigRobotAnimator.SetTrigger("Walk");
-        FindFirstObjectByType<FeedbackUIManager>()?.ShowMessage("Navigation System Restored.");
-        if (GameObject.Find("CM vcam1").TryGetComponent<Unity.Cinemachine.CinemachineCamera>(out var vcam))
-        {
-            vcam.Follow = bigRobot.transform;
-            vcam.LookAt = bigRobot.transform;
-        }
+
+        FindFirstObjectByType<FeedbackUIManager>()?.ShowMessage("System Restored!");
+
+        // 🎥 Focus camera on robot
+        if (robotFocusCam != null) robotFocusCam.Priority = 20;
+        if (robotGameplayCam != null) robotGameplayCam.Priority = 5;
+
+        // Disable player, enable robot
         FindFirstObjectByType<PlayerController>().enabled = false;
         bigRobot.GetComponent<BigRobotController>().enabled = true;
         bigRobot.GetComponent<NavMeshAgent>().enabled = true;
         bigRobot.GetComponent<NavMeshObstacle>().enabled = false;
         bigRobot.GetComponent<BoxCollider>().enabled = false;
-        var player = GameObject.FindWithTag("Player");
-        player.SetActive(false);
 
+        // GameObject player = GameObject.FindWithTag("Player");
+        // if (player != null) player.SetActive(false);
+
+        // Set destination for robot and start camera coroutine
+        bigRobot.GetComponent<NavMeshAgent>().SetDestination(robotTargetPoint.position);
+        StartCoroutine(WaitForRobotArrival());
+    }
+
+    private IEnumerator WaitForRobotArrival()
+    {
+        NavMeshAgent agent = bigRobot.GetComponent<NavMeshAgent>();
+
+        while (agent.pathPending || agent.remainingDistance > agent.stoppingDistance)
+            yield return null;
+
+        // Wait one extra frame for safety
+        yield return new WaitForSeconds(1f);
+        if (GameObject.Find("CM vcam1").TryGetComponent<Unity.Cinemachine.CinemachineCamera>(out var vcam))
+        {
+            vcam.Follow = bigRobot.transform;
+            vcam.LookAt = bigRobot.transform;
+        }
+        // ✅ Switch camera back to gameplay
+        if (robotFocusCam != null) robotFocusCam.Priority = 5;
+        if (robotGameplayCam != null) robotGameplayCam.Priority = 20;
     }
 }

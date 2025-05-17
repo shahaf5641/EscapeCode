@@ -57,7 +57,7 @@ public class CodeWindowManager : MonoBehaviour
         IsOpen = true;
         panel.SetActive(true);
         PlayerController.IsMovementLocked = true;
-
+        BigRobotController.IsMovementLocked = true;
         if (FindFirstObjectByType<ChatGPTClient>().currentPuzzle.TryGetComponent(out PuzzleContextFormatter currentPuzzleFormatter))
         {
             if (lastPuzzleFormatter != currentPuzzleFormatter)
@@ -109,6 +109,7 @@ public class CodeWindowManager : MonoBehaviour
     {
         panel.SetActive(false);
         PlayerController.IsMovementLocked = false;
+        BigRobotController.IsMovementLocked = false;
         IsOpen = false;
     }
 

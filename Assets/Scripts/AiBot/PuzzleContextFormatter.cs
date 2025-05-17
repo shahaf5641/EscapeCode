@@ -7,7 +7,7 @@ public class PuzzleContextFormatter : MonoBehaviour
     public int NextHintIndex = 0;
 
     [TextArea(1, 10)]
-    public string rawString; // Example: string = "T9a52D6am"
+    public string rawString;
 
     [Tooltip("Hints to guide the player (one per line)")]
     public string[] hints;
@@ -20,7 +20,7 @@ public class PuzzleContextFormatter : MonoBehaviour
         StringBuilder sb = new StringBuilder();
 
         sb.AppendLine("Puzzle:");
-        sb.AppendLine(rawString); // Example: string = "T9a52D6am"
+        sb.AppendLine(rawString);
 
         for (int i = 0; i < hints.Length; i++)
         {

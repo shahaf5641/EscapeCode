@@ -12,9 +12,6 @@ public class BigRobotController : MonoBehaviour
     CustomActions input;
     NavMeshAgent agent;
     Animator animator;
-    private bool isCurrentlyWalking = false;
-
-
     [SerializeField] private AudioSource clickSound;
 
     [Header("Movement")]

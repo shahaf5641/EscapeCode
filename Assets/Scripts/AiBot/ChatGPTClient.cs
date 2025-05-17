@@ -180,6 +180,14 @@ public class ChatGPTClient : MonoBehaviour
                 "You: second_sensor[i] = \n\n" +
                 "Player: log append second senor i\n" +
                 "You: log.append(second_sensor[i])\n\n";
+            case "finaldoor":
+                return
+                "Player: nums i plus nums j equals target\n" +
+                "You: nums[i] + nums[j] == target\n\n" +
+                "Player: nums i plus nums j equals 6\n" +
+                "You: nums[i] + nums[j] == 6\n\n" +
+                "Player: answer equals 20\n" +
+                "You: answer = 20\n\n";
             default:
                 return "";
         }
