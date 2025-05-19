@@ -29,6 +29,7 @@ public class CodeWindowManager : MonoBehaviour
         switcher2.isOnNullable = false; // Set visual state to OFF
         FindFirstObjectByType<ChatGPTClient>().isInCodeMode = false; // Ensure logic state is OFF
         switcher2.OnValueChangedNullable += OnSwitcherValueChanged;
+        IsOpen = false;
     }
 
     void OnDestroy()
@@ -54,7 +55,6 @@ public class CodeWindowManager : MonoBehaviour
 
     public void Open(string problemDescription, string defaultCode, Func<string, bool> checkFunc, Action successCallback)
     {
-        IsOpen = true;
         panel.SetActive(true);
         PlayerController.IsMovementLocked = true;
         BigRobotController.IsMovementLocked = true;
@@ -66,7 +66,7 @@ public class CodeWindowManager : MonoBehaviour
                 lastPuzzleFormatter = currentPuzzleFormatter; // ✅ Update the last opened
             }
         }
-
+        IsOpen = true;
         StartCoroutine(SetContentDelayed(problemDescription, defaultCode, checkFunc, successCallback));
     }
 
@@ -107,10 +107,10 @@ public class CodeWindowManager : MonoBehaviour
     }
     public void Close()
     {
+        IsOpen = false;
         panel.SetActive(false);
         PlayerController.IsMovementLocked = false;
         BigRobotController.IsMovementLocked = false;
-        IsOpen = false;
     }
 
     public void EnableCodeMode() => switcher2.isOnNullable = true;

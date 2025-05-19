@@ -13,6 +13,7 @@ public class VoiceCommandManager : MonoBehaviour
     public UnityEngine.UI.Button recordToggleButton;
     public TMPro.TextMeshProUGUI recordToggleLabel;
     private bool isRecording = false;
+    [SerializeField] private AudioSource aiReplySound;
 
     public void ToggleRecording()
     {
@@ -88,6 +89,7 @@ public class VoiceCommandManager : MonoBehaviour
             }
             StartCoroutine(chatGPT.GetAIHelp(input, (response) =>
             {
+                aiReplySound.Play();
                 if (chatGPT.isInCodeMode)
                 {
                     codeWindow.userInput.text = response;

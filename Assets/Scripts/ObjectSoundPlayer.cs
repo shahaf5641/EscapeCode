@@ -12,9 +12,10 @@ public class ObjectSoundPlayer : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (source != null && clickSound != null)
+        if (source != null && clickSound != null && !source.isPlaying)
         {
             source.PlayOneShot(clickSound);
         }
     }
+
 }

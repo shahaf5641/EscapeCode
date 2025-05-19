@@ -131,6 +131,8 @@ MonoBehaviour:
   chestCam: {fileID: 0}
   playerCam: {fileID: 0}
   successSound: {fileID: 1273781510004596733}
+  chestFallSound: {fileID: 8300000, guid: 6c8b71f3d18ac3e419c1ed7bb8fa611f, type: 3}
+  audioSource: {fileID: 0}
 --- !u!114 &1351562290461016448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,7 +167,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 7478151cf36724a7dada558f746c3633, type: 3}
   m_Resource: {fileID: 8300000, guid: 7478151cf36724a7dada558f746c3633, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.353
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -262,3 +264,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clickSound: {fileID: 8300000, guid: 38925787ad0b33a4ea5207f182921b01, type: 3}
+  cam: {fileID: 0}
+  interactableMask:
+    serializedVersion: 2
+    m_Bits: 4294967295

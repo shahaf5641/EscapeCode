@@ -13,8 +13,6 @@ public class BookInteraction : MonoBehaviour
     [SerializeField] private AudioClip chestFallSound;
     [SerializeField] private AudioSource audioSource;
 
-
-
     void OnMouseDown()
     {
         PlayerController.IsMovementLocked = true;

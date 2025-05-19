@@ -45,8 +45,6 @@ public class BigRobotController : MonoBehaviour
         {
             if (hit.collider.CompareTag("WorldClickable"))
             {
-                if (clickSound != null)
-                    clickSound.PlayOneShot(clickSound.clip);
                 return;
             }
         }

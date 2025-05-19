@@ -9,6 +9,7 @@ public class FeedbackUIManager : MonoBehaviour
     public TextMeshProUGUI feedbackText;
     public float fadeDuration = 0.5f;
     public float displayTime = 2f;
+    [SerializeField] private AudioSource messageSound;
 
     private Coroutine fadeRoutine;
 
@@ -21,6 +22,8 @@ public class FeedbackUIManager : MonoBehaviour
 
         panel.SetActive(true);
         feedbackText.text = message;
+        if (message == "Try again" || message == "No More Hints Available")
+            messageSound.Play();
         fadeRoutine = StartCoroutine(FadeInAndOut());
     }
 
