@@ -6,19 +6,18 @@ using Quaternion = UnityEngine.Quaternion;
 public class BigRobotController : MonoBehaviour
 {
     public static bool IsMovementLocked = false;
-
     const string IDLE = "Idle";
     const string WALK = "Walk";
     CustomActions input;
     NavMeshAgent agent;
     Animator animator;
-    [SerializeField] private AudioSource clickSound;
-
+    [SerializeField] private AudioSource walkSound;
     [Header("Movement")]
     [SerializeField] ParticleSystem clickEffect;
     private ParticleSystem currentClickEffect;
     [SerializeField] LayerMask clickableLayers;
     float lookRotationSpeed = 2f;
+    private bool isWalking = false;
 
     void Awake()
     {
@@ -37,7 +36,6 @@ public class BigRobotController : MonoBehaviour
     void ClickToMove()
     {
         if (IsMovementLocked) return;
-
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] hits = Physics.RaycastAll(ray, 100, clickableLayers);
 
@@ -98,8 +96,23 @@ public class BigRobotController : MonoBehaviour
     {
         if (agent == null || !agent.enabled) return;
 
-        bool shouldWalk = agent.hasPath && agent.remainingDistance > agent.stoppingDistance;
+        bool shouldWalk = agent.velocity.sqrMagnitude > 0.1f;
 
-        animator.SetBool("IsWalking", shouldWalk);
+        if (shouldWalk && !isWalking)
+        {
+            animator.SetBool("IsWalking", true);
+            isWalking = true;
+
+            if (walkSound != null && !walkSound.isPlaying)
+                walkSound.Play(); // ✅ Will loop automatically because Loop is checked
+        }
+        else if (!shouldWalk && isWalking)
+        {
+            animator.SetBool("IsWalking", false);
+            isWalking = false;
+
+            if (walkSound != null && walkSound.isPlaying)
+                walkSound.Stop(); // ✅ Stops when idle
+        }
     }
 }

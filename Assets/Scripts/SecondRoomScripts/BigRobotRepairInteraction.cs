@@ -5,7 +5,8 @@ using UnityEngine.AI;
 public class BigRobotRepairInteraction : MonoBehaviour
 {
     [SerializeField] private CodeWindowManager codeWindow;
-    [SerializeField] private AudioSource activationSound;
+    [SerializeField] private AudioSource clickSound;
+    [SerializeField] private AudioClip activationSound;
     [SerializeField] private Animator bigRobotAnimator;
     [SerializeField] private GameObject bigRobot;
     [SerializeField] private Unity.Cinemachine.CinemachineCamera robotFocusCam;
@@ -18,6 +19,7 @@ public class BigRobotRepairInteraction : MonoBehaviour
     void OnMouseDown()
     {
         PlayerController.IsMovementLocked = true;
+        clickSound.PlayOneShot(clickSound.clip);
         if (isSolved || codeWindow == null) return;
 
         string problemText =
@@ -58,8 +60,8 @@ public class BigRobotRepairInteraction : MonoBehaviour
     {
         isSolved = true;
         finalDoorCollider.enabled = true;
-        if (activationSound != null && activationSound.clip != null)
-            activationSound.Play();
+        if (activationSound != null && clickSound != null)
+            clickSound.PlayOneShot(activationSound);
 
         if (bigRobotAnimator != null)
             bigRobotAnimator.SetTrigger("Walk");
@@ -87,20 +89,30 @@ public class BigRobotRepairInteraction : MonoBehaviour
 
     private IEnumerator WaitForRobotArrival()
     {
+        // 🔒 Lock robot input while we wait for it to arrive
+        BigRobotController.IsMovementLocked = true;
+
         NavMeshAgent agent = bigRobot.GetComponent<NavMeshAgent>();
 
+        // Wait until the robot has reached its destination
         while (agent.pathPending || agent.remainingDistance > agent.stoppingDistance)
             yield return null;
 
-        // Wait one extra frame for safety
+        // Wait an extra second for animation or sound to finish
         yield return new WaitForSeconds(1f);
+
+        // Reassign camera follow/LookAt
         if (GameObject.Find("CM vcam1").TryGetComponent<Unity.Cinemachine.CinemachineCamera>(out var vcam))
         {
             vcam.Follow = bigRobot.transform;
             vcam.LookAt = bigRobot.transform;
         }
-        // ✅ Switch camera back to gameplay
+
+        // Switch camera priorities
         if (robotFocusCam != null) robotFocusCam.Priority = 5;
         if (robotGameplayCam != null) robotGameplayCam.Priority = 20;
+
+        // 🔓 Unlock robot movement
+        BigRobotController.IsMovementLocked = false;
     }
 }

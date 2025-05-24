@@ -12,9 +12,10 @@ public class RobotSphereController : MonoBehaviour
     [SerializeField] private GameObject bigRobot;
     [SerializeField] private CinemachineCamera sphereFollowCam;
     [SerializeField] private CinemachineCamera playerCam;
-    private Vector3 preRollPosition;
     [SerializeField] private NavMeshObstacle obstacle;
     [SerializeField] private AudioSource rollSound;
+    [SerializeField] private AudioClip endRollSound;
+
 
     private bool hasRolled = false;
 
@@ -51,7 +52,7 @@ public class RobotSphereController : MonoBehaviour
         // Play the roll sound
         if (rollSound != null)
         {
-            rollSound.Play();
+            rollSound.PlayOneShot(rollSound.clip);
         }
         if (agent != null)
         {
@@ -68,6 +69,10 @@ public class RobotSphereController : MonoBehaviour
             // Reached destination
             anim.ResetTrigger("Roll_Anim");
             rollSound.Stop();
+            if (rollSound != null && endRollSound != null)
+            {
+                rollSound.PlayOneShot(endRollSound);
+            }
             if (bigRobot != null && !bigRobot.activeSelf)
                 bigRobot.SetActive(true);
             obstacle.enabled = true;

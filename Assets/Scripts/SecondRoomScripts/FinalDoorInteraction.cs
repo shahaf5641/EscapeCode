@@ -6,14 +6,17 @@ public class FinalDoorInteraction : MonoBehaviour
 {
     [SerializeField] private CodeWindowManager codeWindow;
     [SerializeField] private Animator finalDoorAnimator;
-    [SerializeField] private AudioSource unlockSound;
+    [SerializeField] private AudioSource sound;
+    [SerializeField] private AudioClip doorOpenSound;
+    [SerializeField] private AudioClip finishRoomSound;
+    
     public string puzzleType = "finaldoor";
-
     private bool isSolved = false;
-
     void OnMouseDown()
     {
         if (isSolved || codeWindow == null) return;
+        if (sound != null)
+            sound.Play();
 
         string problemText =
         @"Final Door: Target Signal Match
@@ -48,9 +51,9 @@ public class FinalDoorInteraction : MonoBehaviour
     private void OnSolved()
     {
         isSolved = true;
-
-        if (unlockSound != null)
-            unlockSound.Play();
+        if (sound != null)
+            sound.PlayOneShot(doorOpenSound);
+            sound.PlayOneShot(finishRoomSound);
 
         if (finalDoorAnimator != null)
             finalDoorAnimator.SetTrigger("Open");
