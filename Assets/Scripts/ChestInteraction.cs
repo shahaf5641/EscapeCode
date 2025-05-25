@@ -15,9 +15,7 @@ public class ChestInteraction : MonoBehaviour
         if (chestOpened || codeWindow == null) return;
 
         string problemText =
-        @"Unlock The Chest
-
-        chest_locked = True
+        @"chest_locked = True
         has_key_code = False
 
         if has_key_code:
@@ -33,6 +31,7 @@ public class ChestInteraction : MonoBehaviour
 
         codeWindow.Open(
             problemText,
+            "Unlock The Chest",
             defaultCode,
             CheckChestCode,
             OnChestSolved

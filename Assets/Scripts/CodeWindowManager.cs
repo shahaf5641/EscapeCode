@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class CodeWindowManager : MonoBehaviour
 {
-    public TextMeshProUGUI problemText;
+    public TextMeshProUGUI problemTextUI;
+    public TextMeshProUGUI problemDescriptionUI;
     public TextMeshProUGUI resultOutput;
     public TextMeshProUGUI chatHistoryDisplay;
     public GameObject panel;
@@ -53,7 +54,7 @@ public class CodeWindowManager : MonoBehaviour
         }
     }
 
-    public void Open(string problemDescription, string defaultCode, Func<string, bool> checkFunc, Action successCallback)
+    public void Open(string problemText, string problemDescription, string defaultCode, Func<string, bool> checkFunc, Action successCallback)
     {
         panel.SetActive(true);
         PlayerController.IsMovementLocked = true;
@@ -67,14 +68,15 @@ public class CodeWindowManager : MonoBehaviour
             }
         }
         IsOpen = true;
-        StartCoroutine(SetContentDelayed(problemDescription, defaultCode, checkFunc, successCallback));
+        StartCoroutine(SetContentDelayed(problemText, problemDescription, defaultCode, checkFunc, successCallback));
     }
 
 
-    private IEnumerator SetContentDelayed(string problemDescription, string defaultCode, Func<string, bool> checkFunc, Action successCallback)
+    private IEnumerator SetContentDelayed(string problemText, string problemDescription, string defaultCode, Func<string, bool> checkFunc, Action successCallback)
     {
         yield return null;
-        problemText.text = problemDescription;
+        problemTextUI.text = problemText;
+        problemDescriptionUI.text = problemDescription;
         solveCheck = checkFunc;
         onSolved = successCallback;
         solved = false;
@@ -130,5 +132,13 @@ public class CodeWindowManager : MonoBehaviour
         // Scroll to bottom after canvas updates
         Canvas.ForceUpdateCanvases();
         chatScrollRect.verticalNormalizedPosition = 0f;
+    }
+    public string AddLineNumbers(string text)
+    {
+        var lines = text.Split('\n');
+        for (int i = 0; i < lines.Length; i++)
+            lines[i] = $"{i + 1}. {lines[i].TrimEnd()}";
+
+        return string.Join("\n", lines);
     }
 }

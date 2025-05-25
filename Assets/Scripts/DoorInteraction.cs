@@ -20,9 +20,7 @@ public class DoorInteraction : MonoBehaviour
         string pressedButtonValue = PuzzleState.pressedButton ? "True" : "False";
 
         string problemText =
-        $@"The Final Boss
-
-        first_number = 4
+        $@"first_number = 4
         second_number = 5
         third_number = 10
         button_pressed = {pressedButtonValue}
@@ -46,6 +44,7 @@ public class DoorInteraction : MonoBehaviour
 
         codeWindow.Open(
             problemText,
+            "The Final Boss",
             defaultCode,
             CheckDoorCode,
             OnDoorSolved

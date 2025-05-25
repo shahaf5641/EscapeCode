@@ -23,8 +23,7 @@ public class BigRobotRepairInteraction : MonoBehaviour
         if (isSolved || codeWindow == null) return;
 
         string problemText =
-        @"Robot Sensor Merge Protocol\n
-        The robot’s left and right sensors recorded voltage data separately,
+        @"The robot’s left and right sensors recorded voltage data separately,
         causing a desynchronized input stream.
         To restore navigation, merge the arrays into a single, synchronized log
         by alternating their readings.
@@ -46,6 +45,7 @@ public class BigRobotRepairInteraction : MonoBehaviour
 
         codeWindow.Open(
             problemText,
+            "Robot Sensor Merge Protocol",
             defaultCode,
             CheckAnswer,
             OnSolved

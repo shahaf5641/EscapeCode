@@ -15,8 +15,7 @@ public class LaptopInteraction : MonoBehaviour
         PlayerController.IsMovementLocked = true;
         if (isSolved || codeWindow == null) return;
         string problemText =
-        @"Online Server Count
-        The robot is trying to connect, but it can only connect if it knows how many servers are currently online.
+        @"The robot is trying to connect, but it can only connect if it knows how many servers are currently online.
         servers_status = [True, False, True, True, False]
         online_count = 0
 
@@ -30,6 +29,7 @@ public class LaptopInteraction : MonoBehaviour
         string defaultCode ="";
         codeWindow.Open(
             problemText,
+            "Online Server Count",
             defaultCode,
             CheckLaptopCode,
             OnLaptopSolved

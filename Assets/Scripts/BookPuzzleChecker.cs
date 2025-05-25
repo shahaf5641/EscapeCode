@@ -17,10 +17,8 @@ public class BookInteraction : MonoBehaviour
     {
         PlayerController.IsMovementLocked = true;
         if (isSolved || codeWindow == null) return;
-        string problemText =
-        @"The Secret Code
-        
-        string = ""t9a52d6am""
+        string problemText = 
+        @"string = ""t9a52d6am""
         secret_code = string[0] + string[2] + string[5] + string[7] + string[8]
 
         What is the correct line of code to assign the secret_code variable
@@ -28,11 +26,13 @@ public class BookInteraction : MonoBehaviour
         Use a line like:
         secret_code = ""______""";
 
+        problemText = codeWindow.AddLineNumbers(problemText);
         FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
 
         string defaultCode ="";
         codeWindow.Open(
             problemText,
+            "Secret Code",
             defaultCode,
             CheckBookCode,
             OnBookSolved

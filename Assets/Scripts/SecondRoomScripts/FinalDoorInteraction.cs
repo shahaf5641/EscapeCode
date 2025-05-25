@@ -19,8 +19,7 @@ public class FinalDoorInteraction : MonoBehaviour
             sound.Play();
 
         string problemText =
-        @"Final Door: Target Signal Match
-        Find two indices such that their values add up to the target.
+        @"Find two indices such that their values add up to the target.
 
         nums = [3, 2, 4]
         target = 6
@@ -38,6 +37,7 @@ public class FinalDoorInteraction : MonoBehaviour
 
         codeWindow.Open(
             problemText,
+            "Target Signal Match",
             defaultCode,
             CheckAnswer,
             OnSolved

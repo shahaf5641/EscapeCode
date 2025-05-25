@@ -17,8 +17,7 @@ public class PasswordSphereeInteraction : MonoBehaviour
         PlayerController.IsMovementLocked = true;
 
         string problemText =
-        @"Robot Activation Code
-        Complete the condition to find the even password
+        @"Complete the condition to find the even password
 
         passwords = [8271, 1235, 4312, 9001]
         i = 0
@@ -38,6 +37,7 @@ public class PasswordSphereeInteraction : MonoBehaviour
 
         codeWindow.Open(
             problemText,
+            "Robot Activation",
             defaultCode,
             CheckPasswordCode,
             OnPasswordSolved
