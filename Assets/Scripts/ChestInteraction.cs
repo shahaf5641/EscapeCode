@@ -9,30 +9,27 @@ public class ChestInteraction : MonoBehaviour
     public string puzzleType = "chest";
     [SerializeField] private AudioSource successSound;
     private bool chestOpened = false;
-
     void OnMouseDown()
     {
         if (chestOpened || codeWindow == null) return;
+        string problemDescription = 
+@"The chest won’t budge — it’s sealed by logic, not a lock.
+Somewhere inside, a real key is waiting... but to reach it, you'll need to write the correct line of code.
+Can you crack the command that opens the chest?";
 
-        string problemText =
-        @"chest_locked = True
-        has_key_code = False
-
-        if has_key_code:
-            chest_locked = False
-
-        Can you figure out how to unlock the chest?
-        Try writing a line of code that makes the chest unlock.";
-
+        string problemCode =
+@"chest_locked = True
+has_key_code = False
+_________________
+if has_key_code:
+    chest_locked = False";
 
         FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
 
-        string defaultCode ="";
-
         codeWindow.Open(
-            problemText,
             "Unlock The Chest",
-            defaultCode,
+            problemDescription,
+            problemCode,
             CheckChestCode,
             OnChestSolved
         );

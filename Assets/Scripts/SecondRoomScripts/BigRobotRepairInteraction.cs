@@ -16,41 +16,42 @@ public class BigRobotRepairInteraction : MonoBehaviour
     private bool isSolved = false;
     public string puzzleType = "robot";
 
-    void OnMouseDown()
-    {
-        PlayerController.IsMovementLocked = true;
-        clickSound.PlayOneShot(clickSound.clip);
-        if (isSolved || codeWindow == null) return;
+void OnMouseDown()
+{
+    PlayerController.IsMovementLocked = true;
+    clickSound.PlayOneShot(clickSound.clip);
 
-        string problemText =
-        @"The robot’s left and right sensors recorded voltage data separately,
-        causing a desynchronized input stream.
-        To restore navigation, merge the arrays into a single, synchronized log
-        by alternating their readings.
+    if (isSolved || codeWindow == null) return;
 
-        first_sensor = [110, 230, 450, 670]
-        second_sensor = [120, 240, 460, 680]
-        log = []
+    string problemTitle = "Robot Sensor Merge Protocol";
 
-        for i in range(4):
-            log.append(first_sensor[i])
-            __________
+    string problemDescription =
+@"The robot’s left and right sensors recorded voltage data separately,
+causing a desynchronized input stream.
+To restore navigation, merge the arrays into a single, synchronized log
+by alternating their readings.";
 
-        if log == [110, 120, 230, 240, 450, 460, 670, 680]:
-            activate_robot()";
+    string problemCode =
+@"first_sensor = [110, 230, 450, 670]
+second_sensor = [120, 240, 460, 680]
+log = []
+for i in range(4):
+    log.append(first_sensor[i])
+    __________________________
+if log == [110, 120, 230, 240, 450, 460, 670, 680]:
+    activate_robot()";
 
-        FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
+    FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
 
-        string defaultCode = "";
+    codeWindow.Open(
+        problemTitle,
+        problemDescription,
+        problemCode,
+        CheckAnswer,
+        OnSolved
+    );
+}
 
-        codeWindow.Open(
-            problemText,
-            "Robot Sensor Merge Protocol",
-            defaultCode,
-            CheckAnswer,
-            OnSolved
-        );
-    }
 
     private bool CheckAnswer(string userCode)
     {

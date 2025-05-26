@@ -3,11 +3,13 @@ using TMPro;
 using System;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class CodeWindowManager : MonoBehaviour
 {
-    public TextMeshProUGUI problemTextUI;
-    public TextMeshProUGUI problemDescriptionUI;
+    public TextMeshProUGUI problemDescText;
+    public TextMeshProUGUI problemCodeText;
+    public TextMeshProUGUI problemTitleText;
     public TextMeshProUGUI resultOutput;
     public TextMeshProUGUI chatHistoryDisplay;
     public GameObject panel;
@@ -54,7 +56,7 @@ public class CodeWindowManager : MonoBehaviour
         }
     }
 
-    public void Open(string problemText, string problemDescription, string defaultCode, Func<string, bool> checkFunc, Action successCallback)
+    public void Open(string problemTitle, string problemDescription, string problemCode, Func<string, bool> checkFunc, Action successCallback)
     {
         panel.SetActive(true);
         PlayerController.IsMovementLocked = true;
@@ -68,15 +70,16 @@ public class CodeWindowManager : MonoBehaviour
             }
         }
         IsOpen = true;
-        StartCoroutine(SetContentDelayed(problemText, problemDescription, defaultCode, checkFunc, successCallback));
+        StartCoroutine(SetContentDelayed(problemTitle, problemDescription, problemCode, checkFunc, successCallback));
     }
 
 
-    private IEnumerator SetContentDelayed(string problemText, string problemDescription, string defaultCode, Func<string, bool> checkFunc, Action successCallback)
+    private IEnumerator SetContentDelayed(string problemTitle, string problemDescription, string problemCode, Func<string, bool> checkFunc, Action successCallback)
     {
         yield return null;
-        problemTextUI.text = problemText;
-        problemDescriptionUI.text = problemDescription;
+        problemTitleText.text = problemTitle;
+        problemDescText.text = problemDescription;
+        problemCodeText.text = AddLineNumbers(problemCode);
         solveCheck = checkFunc;
         onSolved = successCallback;
         solved = false;
@@ -136,9 +139,23 @@ public class CodeWindowManager : MonoBehaviour
     public string AddLineNumbers(string text)
     {
         var lines = text.Split('\n');
-        for (int i = 0; i < lines.Length; i++)
-            lines[i] = $"{i + 1}. {lines[i].TrimEnd()}";
+        List<string> numbered = new();
+        int lineNumber = 1;
 
-        return string.Join("\n", lines);
+        foreach (var line in lines)
+        {
+            string trimmed = line.TrimEnd();
+            if (string.IsNullOrWhiteSpace(trimmed))
+            {
+                numbered.Add(""); // Preserve visual spacing without number
+            }
+            else
+            {
+                numbered.Add($"{lineNumber++}. {trimmed}");
+            }
+        }
+
+        return string.Join("\n", numbered);
     }
+
 }

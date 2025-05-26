@@ -12,37 +12,42 @@ public class FinalDoorInteraction : MonoBehaviour
     
     public string puzzleType = "finaldoor";
     private bool isSolved = false;
-    void OnMouseDown()
-    {
-        if (isSolved || codeWindow == null) return;
-        if (sound != null)
-            sound.Play();
+void OnMouseDown()
+{
+    if (isSolved || codeWindow == null) return;
 
-        string problemText =
-        @"Find two indices such that their values add up to the target.
+    if (sound != null)
+        sound.Play();
 
-        nums = [3, 2, 4]
-        target = 6
+    string problemTitle = "Target Signal Match";
 
-        for i in range(len(nums)):
-            for j in range(i + 1, len(nums)):
-                if __________:
-                    answer = [i, j]
+    string problemDescription =
+@"You're one step away from unlocking the path forward.
+The system requires a precise input — the final condition in the sequence.
+Complete it correctly, and the door will open.";
 
-        if answer == [1, 2]:
-            unlock_final_door()";
-        FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
 
-        string defaultCode = "";
+    string problemCode =
+@"nums = [3, 2, 4]
+target = 6
+for i in range(len(nums)):
+    for j in range(i + 1, len(nums)):
+        if __________:
+            answer = [i, j]
+if answer == [1, 2]:
+    unlock_final_door()";
 
-        codeWindow.Open(
-            problemText,
-            "Target Signal Match",
-            defaultCode,
-            CheckAnswer,
-            OnSolved
-        );
-    }
+    FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
+
+    codeWindow.Open(
+        problemTitle,
+        problemDescription,
+        problemCode,
+        CheckAnswer,
+        OnSolved
+    );
+}
+
 
     private bool CheckAnswer(string userCode)
     {

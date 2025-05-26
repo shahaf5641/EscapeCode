@@ -17,27 +17,28 @@ public class BookInteraction : MonoBehaviour
     {
         PlayerController.IsMovementLocked = true;
         if (isSolved || codeWindow == null) return;
-        string problemText = 
-        @"string = ""t9a52d6am""
-        secret_code = string[0] + string[2] + string[5] + string[7] + string[8]
 
-        What is the correct line of code to assign the secret_code variable
-        with the final word?
-        Use a line like:
-        secret_code = ""______""";
-
-        problemText = codeWindow.AddLineNumbers(problemText);
         FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
 
-        string defaultCode ="";
+        string problemTitle = "Secret Code";
+
+        string problemDescription = 
+@"Buried within the pages of an old journal lies a secret word—
+but it’s scattered, hidden among the letters like a riddle.
+Can you reconstruct the message by picking the right characters?";
+
+        string problemCode =
+@"string = ""t9a52d6am""
+secret_code = string[0] + string[2] + string[5] + string[7] + string[8]
+secret_code = ""________""";
+
         codeWindow.Open(
-            problemText,
-            "Secret Code",
-            defaultCode,
+            problemTitle,
+            problemDescription,
+            problemCode,
             CheckBookCode,
             OnBookSolved
         );
-
     }
 
     private bool CheckBookCode(string userCode)

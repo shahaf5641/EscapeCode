@@ -19,37 +19,37 @@ public class DoorInteraction : MonoBehaviour
 
         string pressedButtonValue = PuzzleState.pressedButton ? "True" : "False";
 
-        string problemText =
-        $@"first_number = 4
-        second_number = 5
-        third_number = 10
-        button_pressed = {pressedButtonValue}
+        string problemTitle = "The Final Boss";
 
-        code = first_number * second_number + third_number
+        string problemDescription =
+@"This is it — the final step in the sequence.
+Get the value right, and the path opens. Get it wrong… and it stays sealed.
+Assign the correct value to 'answer':
+answer = ______";
 
-        answer = 0
-
-        if answer == code and button_pressed == True:
-            door_open = True
-        else:
-            door_open = False
-
-        Write a line assigning the correct value to 'answer':
-        answer = ______";
-
+        string problemCode = 
+$@"first_number = 4
+second_number = 5
+third_number = 10
+button_pressed = {pressedButtonValue}
+code = first_number * second_number + third_number
+answer = 0
+if answer == code and button_pressed == True:
+    door_open = True
+else:
+    door_open = False";
 
         FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
 
-        string defaultCode ="";
-
         codeWindow.Open(
-            problemText,
-            "The Final Boss",
-            defaultCode,
+            problemTitle,
+            problemDescription,
+            problemCode,
             CheckDoorCode,
             OnDoorSolved
         );
     }
+
 
     private bool CheckDoorCode(string userCode)
     {

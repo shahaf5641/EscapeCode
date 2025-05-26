@@ -10,39 +10,41 @@ public class PasswordSphereeInteraction : MonoBehaviour
     [SerializeField] private GameObject handRailToDisable;
 
 
-    void OnMouseDown()
-    {
-        if (isSolved || codeWindow == null) return;
+void OnMouseDown()
+{
+    if (isSolved || codeWindow == null) return;
 
-        PlayerController.IsMovementLocked = true;
+    PlayerController.IsMovementLocked = true;
 
-        string problemText =
-        @"Complete the condition to find the even password
+    string problemTitle = "Robot Activation";
 
-        passwords = [8271, 1235, 4312, 9001]
-        i = 0
-        password = 1
+        string problemDescription =
+@"The sphere robot is powered up, but won’t move until the right password is found.
+Scan the list. Identify the condition that activates it.
+One line stands between silence — and motion.";
 
-        while i < 4:
-            if passwords[i] % 2 == ___:
-                password = passwords[i]
-            i += 1
+    string problemCode =
+@"passwords = [8271, 1235, 4312, 9001]
+i = 0
+password = 1
+while i < 4:
+    if passwords[i] % 2 == _____:
+        password = passwords[i]
+    i += 1
+if password == 4312:
+    activate_robot()";
 
-        if password == 4312:
-            activate_robot()";
+    FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
 
-        FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
+    codeWindow.Open(
+        problemTitle,
+        problemDescription,
+        problemCode,
+        CheckPasswordCode,
+        OnPasswordSolved
+    );
+}
 
-        string defaultCode = "";
-
-        codeWindow.Open(
-            problemText,
-            "Robot Activation",
-            defaultCode,
-            CheckPasswordCode,
-            OnPasswordSolved
-        );
-    }
 
     private bool CheckPasswordCode(string userCode)
     {

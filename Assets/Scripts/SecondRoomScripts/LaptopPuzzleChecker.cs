@@ -10,31 +10,36 @@ public class LaptopInteraction : MonoBehaviour
     public Unity.Cinemachine.CinemachineCamera sphereRobotCam;
     public Unity.Cinemachine.CinemachineCamera playerCam;
     [SerializeField] private GameObject passwordPanel;
-    void OnMouseDown()
-    {
-        PlayerController.IsMovementLocked = true;
-        if (isSolved || codeWindow == null) return;
-        string problemText =
-        @"The robot is trying to connect, but it can only connect if it knows how many servers are currently online.
-        servers_status = [True, False, True, True, False]
-        online_count = 0
+void OnMouseDown()
+{
+    PlayerController.IsMovementLocked = true;
+    if (isSolved || codeWindow == null) return;
 
-        for status in servers_status:
-            if __________:
-                online_count += 1
+    string problemTitle = "Online Server Count";
 
-        This server room has five systems.
-        Can you fill in the condition to count how many are currently online?";
-        FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
-        string defaultCode ="";
-        codeWindow.Open(
-            problemText,
-            "Online Server Count",
-            defaultCode,
-            CheckLaptopCode,
-            OnLaptopSolved
-        );
-    }
+    string problemDescription =
+@"You're monitoring a room of five servers — some online, some down.
+To restore full access, first you’ll need to count how many are active.
+Complete the condition that tallies the online systems.";
+
+    string problemCode =
+@"servers_status = [True, False, True, True, False]
+online_count = 0
+for status in servers_status:
+    if __________:
+        online_count += 1";
+
+    FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
+
+    codeWindow.Open(
+        problemTitle,
+        problemDescription,
+        problemCode,
+        CheckLaptopCode,
+        OnLaptopSolved
+    );
+}
+
 
     private bool CheckLaptopCode(string userCode)
     {
