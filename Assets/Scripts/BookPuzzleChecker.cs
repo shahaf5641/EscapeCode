@@ -9,34 +9,36 @@ public class BookInteraction : MonoBehaviour
     public string puzzleType = "book";
     public Unity.Cinemachine.CinemachineCamera chestCam;
     public Unity.Cinemachine.CinemachineCamera playerCam;
-
-
+    [SerializeField] private AudioSource successSound;
+    [SerializeField] private AudioClip chestFallSound;
+    [SerializeField] private AudioSource audioSource;
 
     void OnMouseDown()
     {
-
-    if (isSolved || codeWindow == null) return;
-        string problemText =
-        @"The Secret Code
-        
-        string = ""t9a52d6am""
-        secret_code = string[0] + string[2] + string[5] + string[7] + string[8]
-
-        What is the correct line of code to assign the secret_code variable
-        with the final word?
-        Use a line like:
-        secret_code = ""______""";
+        PlayerController.IsMovementLocked = true;
+        if (isSolved || codeWindow == null) return;
 
         FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
 
-        string defaultCode ="";
+        string problemTitle = "Secret Code";
+
+        string problemDescription = 
+@"Buried within the pages of an old journal lies a secret word—
+but it’s scattered, hidden among the letters like a riddle.
+Can you reconstruct the message by picking the right characters?";
+
+        string problemCode =
+@"string = ""t9a52d6am""
+secret_code = string[0] + string[2] + string[5] + string[7] + string[8]
+secret_code = ""________""";
+
         codeWindow.Open(
-            problemText,
-            defaultCode,
+            problemTitle,
+            problemDescription,
+            problemCode,
             CheckBookCode,
             OnBookSolved
         );
-
     }
 
     private bool CheckBookCode(string userCode)
@@ -47,15 +49,15 @@ public class BookInteraction : MonoBehaviour
     private void OnBookSolved()
     {
         isSolved = true;
-
+        successSound.PlayOneShot(successSound.clip);
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Book solved!");
-
+        audioSource.PlayOneShot(chestFallSound);
         if (chestObject != null)
         {
             chestObject.SetActive(true);
             Animator chestAnim = chestObject.GetComponent<Animator>();
-            // You can optionally play the chest opening animation here
         }
+        gameObject.GetComponent<BoxCollider>().enabled = false;
 
         chestCam.Priority = 20;     // Focus on chest
         playerCam.Priority = 10;    // Keep player cam lower

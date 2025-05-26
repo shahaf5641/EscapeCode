@@ -10,7 +10,7 @@ EditorBuildSettings:
     guid: a2b257e4b3c26de4e9879848f76e7b99
   - enabled: 1
     path: Assets/Scenes/FirstRoomScene.unity
-    guid: 29f801e521a48fb44a82d31a6385acab
+    guid: 075c8381bc840724b966e0f04d224882
   - enabled: 1
     path: Assets/Scenes/SecondRoomScene.unity
     guid: dc9c1bebd87ca7248933234722a6496d

@@ -13,6 +13,7 @@ public class VoiceCommandManager : MonoBehaviour
     public UnityEngine.UI.Button recordToggleButton;
     public TMPro.TextMeshProUGUI recordToggleLabel;
     private bool isRecording = false;
+    [SerializeField] private AudioSource aiReplySound;
 
     public void ToggleRecording()
     {
@@ -46,8 +47,6 @@ public class VoiceCommandManager : MonoBehaviour
         {
             string input = text.ToLower();
             input = new string(input.Where(c => !char.IsPunctuation(c)).ToArray());
-            userTextDisplay.text = input;
-
             if (IsHintRequested(input))
             {
                 var puzzle = chatGPT.currentPuzzle.GetComponent<PuzzleContextFormatter>();
@@ -72,13 +71,15 @@ public class VoiceCommandManager : MonoBehaviour
             {
                 chatGPT.isInCodeMode = true;
                 FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Code Mode Activated");
+                codeWindow.EnableCodeMode();
                 return;
             }
 
             if (IsCodeModeDeactivation(input))
             {
                 chatGPT.isInCodeMode = false;
-                FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Left Code Mode");
+                FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Normal Mode Activated");
+                codeWindow.DisableCodeMode();
                 return;
             }
             if (IsSubmitRequested(input))
@@ -88,13 +89,14 @@ public class VoiceCommandManager : MonoBehaviour
             }
             StartCoroutine(chatGPT.GetAIHelp(input, (response) =>
             {
+                aiReplySound.Play();
                 if (chatGPT.isInCodeMode)
                 {
                     codeWindow.userInput.text = response;
                 }
                 else
                 {
-                    codeWindow.aiResponse.text = response;
+                    codeWindow.AppendChatLine(input, response);
                 }
             }));
         }));
@@ -115,7 +117,7 @@ public class VoiceCommandManager : MonoBehaviour
     {
         string[] activationPhrases = new[]
         {
-            "code mode", "codemode", "cod mod", "cowd mode", "cold mode", "coat mode", "codemood", "cowed mode",
+            "code mode", "codemode", "codmode", "codmod", "cod mod", "cowd mode", "cold mode", "coat mode", "codemood", "cowed mode",
             "start coding", "coding mode", "i want to guess"
         };
 

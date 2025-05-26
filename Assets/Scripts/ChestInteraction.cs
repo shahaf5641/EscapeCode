@@ -7,39 +7,29 @@ public class ChestInteraction : MonoBehaviour
     public Animator chestAnimator;
     public GameObject keyObject;
     public string puzzleType = "chest";
-
-
+    [SerializeField] private AudioSource successSound;
     private bool chestOpened = false;
-
     void OnMouseDown()
     {
         if (chestOpened || codeWindow == null) return;
+        string problemDescription = 
+@"The chest won’t budge — it’s sealed by logic, not a lock.
+Somewhere inside, a real key is waiting... but to reach it, you'll need to write the correct line of code.
+Can you crack the command that opens the chest?";
 
-        string problemText =
-        @"Unlock The Chest
-
-        chest_locked = True
-        has_key_code = False
-        
-        if has_key_code:
-            chest_locked = False
-
-        if chest_locked == False:
-            chest_unlocked = True
-        else:
-            chest_unlocked = False
-
-        Can you figure out how to unlock the chest?
-        Try writing a line of code that makes the chest unlock.";
-
+        string problemCode =
+@"chest_locked = True
+has_key_code = False
+_________________
+if has_key_code:
+    chest_locked = False";
 
         FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
 
-        string defaultCode ="";
-
         codeWindow.Open(
-            problemText,
-            defaultCode,
+            "Unlock The Chest",
+            problemDescription,
+            problemCode,
             CheckChestCode,
             OnChestSolved
         );
@@ -53,10 +43,13 @@ public class ChestInteraction : MonoBehaviour
     private void OnChestSolved()
     {
         if (chestOpened) return;
-
+        successSound.PlayOneShot(successSound.clip);
         chestOpened = true;
-        FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Chest solved!");
+        gameObject.GetComponent<BoxCollider>().enabled = false;
 
+        FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Chest solved!");
+        gameObject.tag = "Untagged";
+        gameObject.layer = LayerMask.NameToLayer("Default");
         if (chestAnimator != null)
         {
             chestAnimator.SetTrigger("Open");
