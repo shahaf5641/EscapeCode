@@ -14,7 +14,6 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Sources")]
     public AudioSource musicSource;
     public AudioSource sfxSource;
-    public AudioSource assistantSource;
 
     private Dictionary<AudioChannel, float> volumes = new();
 
@@ -22,7 +21,6 @@ public class AudioManager : MonoBehaviour
     {
         LoadVolume(AudioChannel.Music, musicSlider, musicSource, "volume_music");
         LoadVolume(AudioChannel.SFX, sfxSlider, sfxSource, "volume_sfx");
-        LoadVolume(AudioChannel.Assistant, assistantSlider, assistantSource, "volume_assistant");
     }
 
     private void LoadVolume(AudioChannel channel, Slider slider, AudioSource source, string key)
@@ -50,10 +48,6 @@ public class AudioManager : MonoBehaviour
             case AudioChannel.SFX:
                 sfxSource.volume = value;
                 PlayerPrefs.SetFloat("volume_sfx", value);
-                break;
-            case AudioChannel.Assistant:
-                assistantSource.volume = value;
-                PlayerPrefs.SetFloat("volume_assistant", value);
                 break;
         }
 

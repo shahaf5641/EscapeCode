@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ThirdRoomScene.unity
     guid: 29f801e521a48fb44a82d31a6385acab
+  - enabled: 1
+    path: Assets/Scenes/GazeCalibration.unity
+    guid: 6dfdb97238d927e4c9eb10ac700a11fa
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
