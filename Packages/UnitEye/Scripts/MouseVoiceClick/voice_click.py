@@ -9,8 +9,6 @@ SAMPLERATE = 16000
 CHUNK_DURATION = 1.0
 CHUNK_SIZE = int(SAMPLERATE * CHUNK_DURATION)
 
-print("🎤 Listening for the word 'click'...")
-
 def record_chunk():
     audio = sd.rec(CHUNK_SIZE, samplerate=SAMPLERATE, channels=1, dtype='float32')
     sd.wait()

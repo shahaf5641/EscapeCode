@@ -4,45 +4,66 @@ using System.IO;
 
 public class VoiceActivator : MonoBehaviour
 {
-    Process voiceProcess;
+    private Process voiceProcess;
+    private string exePath;
+    private bool isRunning = false;
 
-    public void StartVoiceClick()
+    void Start()
     {
-        string exePath = Path.Combine(Application.dataPath, "../voice_click.exe");
+        exePath = Path.Combine(Application.dataPath, "../voice_click.exe");
+    }
 
-        UnityEngine.Debug.Log("🔍 Checking path: " + exePath);
-
-        if (File.Exists(exePath))
+    public void ToggleVoice()
+    {
+        if (!isRunning)
         {
-            UnityEngine.Debug.Log("✅ Found voice_click.exe, attempting to start...");
-
-            voiceProcess = new Process();
-            voiceProcess.StartInfo.FileName = exePath;
-            voiceProcess.StartInfo.UseShellExecute = false;
-            voiceProcess.StartInfo.CreateNoWindow = true;
-            voiceProcess.Start();
-
-            UnityEngine.Debug.Log("🚀 voice_click.exe launched silently!");
+            StartVoiceClick();
         }
         else
         {
-            UnityEngine.Debug.LogError("❌ voice_click.exe NOT FOUND at: " + exePath);
+            StopVoiceClick();
         }
     }
 
-    public void StopVoiceClick()
+    private void StartVoiceClick()
     {
+        if (File.Exists(exePath))
+        {
+            if (voiceProcess == null || voiceProcess.HasExited)
+            {
+                voiceProcess = new Process();
+                voiceProcess.StartInfo.FileName = exePath;
+                voiceProcess.StartInfo.UseShellExecute = false;
+                voiceProcess.StartInfo.CreateNoWindow = true;
+                voiceProcess.Start();
+                isRunning = true;
+                UnityEngine.Debug.Log("🎤 voice_click.exe started.");
+            }
+        }
+    }
+
+    private void StopVoiceClick()
+    {
+        // Kill tracked process (if it's still alive)
         if (voiceProcess != null && !voiceProcess.HasExited)
         {
             voiceProcess.Kill();
             voiceProcess.Dispose();
             voiceProcess = null;
-            UnityEngine.Debug.Log("🛑 voice_click.exe stopped.");
         }
+
+        // Force kill ALL matching processes by name as backup
+        foreach (var p in Process.GetProcessesByName("voice_click"))
+        {
+            p.Kill();
+            UnityEngine.Debug.Log("🔪 Force-killed stray voice_click.exe");
+        }
+        isRunning = false;
     }
+
 
     void OnApplicationQuit()
     {
-        StopVoiceClick();
+        StopVoiceClick(); // Clean up on game exit
     }
 }
