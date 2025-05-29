@@ -3,7 +3,7 @@ import numpy as np
 import pyautogui
 from faster_whisper import WhisperModel
 
-model = WhisperModel("tiny", compute_type="int8")
+model = WhisperModel("whisper_models/tiny", compute_type="int8")
 
 SAMPLERATE = 16000
 CHUNK_DURATION = 1.0

@@ -7,7 +7,7 @@ public class VoiceActivator : MonoBehaviour
     private Process voiceProcess;
     private string exePath;
     private bool isRunning = false;
-
+    public GameObject voiceLoadingPanel;
     void Start()
     {
         exePath = Path.Combine(Application.dataPath, "../voice_click.exe");
@@ -17,10 +17,14 @@ public class VoiceActivator : MonoBehaviour
     {
         if (!isRunning)
         {
+            voiceLoadingPanel.SetActive(true);
+            StartCoroutine(HideLoadingPanelAfterDelay(6f));
             StartVoiceClick();
+
         }
         else
         {
+            voiceLoadingPanel.SetActive(false);
             StopVoiceClick();
         }
     }
@@ -65,5 +69,10 @@ public class VoiceActivator : MonoBehaviour
     void OnApplicationQuit()
     {
         StopVoiceClick(); // Clean up on game exit
+    }
+    private System.Collections.IEnumerator HideLoadingPanelAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        voiceLoadingPanel.SetActive(false);
     }
 }
