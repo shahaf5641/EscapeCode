@@ -49,6 +49,7 @@ for status in servers_status:
     private void OnLaptopSolved()
     {
         isSolved = true;
+        PlayerController.IsMovementLocked = true;
         successSound.PlayOneShot(successSound.clip);
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Message sent!");
         var collider = passwordPanel.GetComponent<BoxCollider>();
@@ -81,6 +82,7 @@ for status in servers_status:
         yield return new WaitForSeconds(delay);
 
         // Switch back to player camera
+        PlayerController.IsMovementLocked = false;
         sphereRobotCam.Priority = 5;
         playerCam.Priority = 15;
     }

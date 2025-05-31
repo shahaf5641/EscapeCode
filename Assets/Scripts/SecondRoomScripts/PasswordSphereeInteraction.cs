@@ -54,7 +54,8 @@ if password == 4312:
     private void OnPasswordSolved()
     {
         isSolved = true;
-                var thisCollider = GetComponent<BoxCollider>();
+        PlayerController.IsMovementLocked = true;
+        var thisCollider = GetComponent<BoxCollider>();
         if (thisCollider != null)
             thisCollider.enabled = false;
         if (successSound != null && successSound.clip != null)
@@ -67,6 +68,7 @@ if password == 4312:
         private IEnumerator DeactivateAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
+        PlayerController.IsMovementLocked = false;
         gameObject.SetActive(false);
     }
 }

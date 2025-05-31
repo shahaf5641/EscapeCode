@@ -60,6 +60,7 @@ if log == [110, 120, 230, 240, 450, 460, 670, 680]:
     private void OnSolved()
     {
         isSolved = true;
+        BigRobotController.IsMovementLocked = true;
         finalDoorCollider.enabled = true;
         if (activationSound != null && clickSound != null)
             clickSound.PlayOneShot(activationSound);
