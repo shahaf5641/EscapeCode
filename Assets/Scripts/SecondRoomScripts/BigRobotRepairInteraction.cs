@@ -55,7 +55,7 @@ if log == [110, 120, 230, 240, 450, 460, 670, 680]:
 
     private bool CheckAnswer(string userCode)
     {
-        return userCode.Equals("log.append(second_sensor[i])");
+        return codeWindow.RunPythonValidator("p5", userCode);
     }
     private void OnSolved()
     {

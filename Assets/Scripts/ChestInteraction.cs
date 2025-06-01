@@ -37,8 +37,9 @@ if has_key_code:
 
     private bool CheckChestCode(string userCode)
     {
-        return userCode.Contains("has_key_code = True") || userCode.Contains("has_key_code=True");
+        return codeWindow.RunPythonValidator("p1", userCode);
     }
+
 
     private void OnChestSolved()
     {

@@ -48,7 +48,7 @@ if password == 4312:
 
     private bool CheckPasswordCode(string userCode)
     {
-        return userCode.Equals("0");
+        return codeWindow.RunPythonValidator("p4", userCode);
     }
 
     private void OnPasswordSolved()

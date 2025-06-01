@@ -1,9 +1,11 @@
 using UnityEngine;
-using TMPro;
 using System;
 using System.Collections;
-using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using TMPro;
+using System.Diagnostics;
+using System.IO;
 
 public class CodeWindowManager : MonoBehaviour
 {
@@ -157,5 +159,42 @@ public class CodeWindowManager : MonoBehaviour
 
         return string.Join("\n", numbered);
     }
+    public bool RunPythonValidator(string problemId, string userInput)
+    {
+        string pythonExePath = Path.Combine(Application.dataPath, "..", "Python", "python.exe");
+        string scriptPath = Path.Combine(Application.dataPath, "..", "Python", "validate_solution.py");
+        userInput = userInput.Replace("\"", "\\\""); // Escape for safety
 
+        ProcessStartInfo psi = new ProcessStartInfo
+        {
+            FileName = pythonExePath,
+            Arguments = $"\"{scriptPath}\" {problemId} \"{userInput}\"",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        try
+        {
+            using (Process process = Process.Start(psi))
+            {
+                string output = process.StandardOutput.ReadToEnd().Trim();
+                string error = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+
+                if (!string.IsNullOrEmpty(error))
+                    UnityEngine.Debug.LogError($"Python Error: {error}");
+
+                UnityEngine.Debug.Log($"Python Output: {output}");
+
+                return output == "correct";
+            }
+        }
+        catch (Exception ex)
+        {
+            UnityEngine.Debug.LogError("Validation failed: " + ex.Message);
+            return false;
+        }
+    }
 }

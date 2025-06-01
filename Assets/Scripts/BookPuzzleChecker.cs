@@ -1,4 +1,4 @@
- using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class BookInteraction : MonoBehaviour
@@ -22,7 +22,7 @@ public class BookInteraction : MonoBehaviour
 
         string problemTitle = "Secret Code";
 
-        string problemDescription = 
+        string problemDescription =
 @"Buried within the pages of an old journal lies a secret word—
 but it’s scattered, hidden among the letters like a riddle.
 Can you reconstruct the message by picking the right characters?";
@@ -43,7 +43,8 @@ secret_code = ""________""";
 
     private bool CheckBookCode(string userCode)
     {
-        return userCode.Contains("secret_code = \"tadam\"") || userCode.Contains("secret_code=\"tadam\"");
+        // Use CodeWindowManager's Python validator with problem ID "p0"
+        return codeWindow.RunPythonValidator("p0", userCode);
     }
 
     private void OnBookSolved()
@@ -52,11 +53,13 @@ secret_code = ""________""";
         successSound.PlayOneShot(successSound.clip);
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Book solved!");
         audioSource.PlayOneShot(chestFallSound);
+
         if (chestObject != null)
         {
             chestObject.SetActive(true);
             Animator chestAnim = chestObject.GetComponent<Animator>();
         }
+
         gameObject.GetComponent<BoxCollider>().enabled = false;
 
         chestCam.Priority = 20;     // Focus on chest
@@ -69,9 +72,8 @@ secret_code = ""________""";
     private IEnumerator WaitAndReturnCamera()
     {
         yield return new WaitForSeconds(3f);
-
-        chestCam.Priority = 5;      // Lower chest cam priority
-        playerCam.Priority = 15;    // Reactivate player cam
+        chestCam.Priority = 5;
+        playerCam.Priority = 15;
     }
 
     private IEnumerator DeactivateAfterDelay(float delay)

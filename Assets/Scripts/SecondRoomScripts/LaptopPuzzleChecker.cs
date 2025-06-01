@@ -40,12 +40,10 @@ for status in servers_status:
     );
 }
 
-
     private bool CheckLaptopCode(string userCode)
     {
-        return userCode.Contains("status == True") || userCode.Equals("status");
+        return codeWindow.RunPythonValidator("p3", userCode);
     }
-
     private void OnLaptopSolved()
     {
         isSolved = true;

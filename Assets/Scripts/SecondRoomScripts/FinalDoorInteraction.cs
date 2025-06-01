@@ -51,7 +51,7 @@ if answer == [1, 2]:
 
     private bool CheckAnswer(string userCode)
     {
-        return userCode.Equals("nums[i] + nums[j] == target");
+        return codeWindow.RunPythonValidator("p6", userCode);
     }
     private void OnSolved()
     {

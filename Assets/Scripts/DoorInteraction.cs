@@ -49,17 +49,11 @@ else:
             OnDoorSolved
         );
     }
-
-
     private bool CheckDoorCode(string userCode)
     {
-        string code = userCode.ToLower().Replace(" ", "").Replace("\n", "").Replace("\r", "");
-
-        bool containsKeyLogic = code.Contains("answer=30");
-
-        return containsKeyLogic && PuzzleState.pressedButton && KeyInventory.HasKey;
+        bool validCode = codeWindow.RunPythonValidator("p2", userCode);
+        return validCode && PuzzleState.pressedButton && KeyInventory.HasKey;
     }
-
     private void OnDoorSolved()
     {
         if (doorOpened) return;
