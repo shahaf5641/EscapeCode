@@ -5,7 +5,6 @@ public class SettingsMenuInGame : MonoBehaviour
 {
     public GameObject settingsPanel;
     public GameObject settingsButton;
-
     public void ToggleSettings()
     {
         bool isNowActive = !settingsPanel.activeSelf;
@@ -13,7 +12,6 @@ public class SettingsMenuInGame : MonoBehaviour
         PlayerController.IsMovementLocked = isNowActive;
         BigRobotController.IsMovementLocked = isNowActive;
     }
-
 
     public void OpenSettings()
     {
