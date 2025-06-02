@@ -19,7 +19,7 @@ public class WebCamInput : MonoBehaviour
     [SerializeField] public Vector2 webCamResolution = DefaultResolution;
     [SerializeField] Texture staticInput;
     [SerializeField] UnityEngine.UI.RawImage rawImage;
-    [SerializeField] int targetFramerate = 999;
+    [SerializeField] int targetFramerate = 160;
 
     // Provide input image Texture.
     public Texture inputImageTexture {
