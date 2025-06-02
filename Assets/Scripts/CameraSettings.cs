@@ -1,10 +1,10 @@
 using UnityEngine;
-using TMPro; // ????? ???? ??
+using TMPro;
 using System.Collections.Generic;
 
 public class CameraSettings : MonoBehaviour
 {
-    public TMP_Dropdown cameraDropdown; // ????? ??TMP_Dropdown
+    public TMP_Dropdown cameraDropdown;
     public static string selectedCameraName;
 
     void Start()
@@ -18,25 +18,49 @@ public class CameraSettings : MonoBehaviour
         WebCamDevice[] devices = WebCamTexture.devices;
         List<string> options = new List<string>();
 
-        foreach (WebCamDevice device in devices)
+        if (devices.Length == 0)
         {
-            options.Add(device.name);
+            options.Add("No camera found");
+            cameraDropdown.AddOptions(options);
+            cameraDropdown.interactable = false;
+            selectedCameraName = "";
+
+            // Disable arrow
+            Transform arrow = cameraDropdown.transform.Find("Arrow");
+            if (arrow != null) arrow.gameObject.SetActive(false);
+
+            // Change label text color to gray
+            TMP_Text label = cameraDropdown.transform.Find("Label").GetComponent<TMP_Text>();
+            label.color = Color.gray;
         }
-
-        cameraDropdown.AddOptions(options);
-
-        string savedCamera = PlayerPrefs.GetString("SelectedCamera", "");
-        if (!string.IsNullOrEmpty(savedCamera) && options.Contains(savedCamera))
+        else
         {
-            cameraDropdown.value = options.IndexOf(savedCamera);
-        }
+            foreach (WebCamDevice device in devices)
+            {
+                options.Add(device.name);
+            }
 
-        cameraDropdown.onValueChanged.AddListener(delegate {
-            OnCameraSelected(cameraDropdown);
-        });
+            cameraDropdown.AddOptions(options);
+            cameraDropdown.interactable = true;
+
+            string savedCamera = PlayerPrefs.GetString("SelectedCamera", "");
+            if (!string.IsNullOrEmpty(savedCamera) && options.Contains(savedCamera))
+            {
+                cameraDropdown.value = options.IndexOf(savedCamera);
+                selectedCameraName = savedCamera;
+            }
+            else
+            {
+                selectedCameraName = options[0];
+            }
+
+            cameraDropdown.onValueChanged.AddListener(delegate {
+                OnCameraSelected(cameraDropdown);
+            });
+        }
     }
 
-    void OnCameraSelected(TMP_Dropdown dropdown) // ????? ??
+    void OnCameraSelected(TMP_Dropdown dropdown)
     {
         selectedCameraName = dropdown.options[dropdown.value].text;
         PlayerPrefs.SetString("SelectedCamera", selectedCameraName);

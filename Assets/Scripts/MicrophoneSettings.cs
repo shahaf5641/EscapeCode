@@ -17,17 +17,34 @@ public class MicrophoneSettings : MonoBehaviour
         microphoneDropdown.ClearOptions();
         List<string> options = new List<string>(Microphone.devices);
 
-        microphoneDropdown.AddOptions(options);
-
-        string savedMicrophone = PlayerPrefs.GetString("SelectedMicrophone", "");
-        if (!string.IsNullOrEmpty(savedMicrophone) && options.Contains(savedMicrophone))
+        if (options.Count == 0)
         {
-            microphoneDropdown.value = options.IndexOf(savedMicrophone);
-        }
+            options.Add("No microphone found");
+            microphoneDropdown.interactable = false;
 
-        microphoneDropdown.onValueChanged.AddListener(delegate {
-            OnMicrophoneSelected(microphoneDropdown);
-        });
+            Transform arrow = microphoneDropdown.transform.Find("Arrow");
+            if (arrow != null) arrow.gameObject.SetActive(false);
+
+            TMP_Text label = microphoneDropdown.transform.Find("Label").GetComponent<TMP_Text>();
+            label.color = Color.gray;
+
+            selectedMicrophone = "";
+        }
+        else
+        {
+            microphoneDropdown.AddOptions(options);
+            microphoneDropdown.interactable = true;
+
+            string savedMicrophone = PlayerPrefs.GetString("SelectedMicrophone", "");
+            if (!string.IsNullOrEmpty(savedMicrophone) && options.Contains(savedMicrophone))
+            {
+                microphoneDropdown.value = options.IndexOf(savedMicrophone);
+            }
+
+            microphoneDropdown.onValueChanged.AddListener(delegate {
+                OnMicrophoneSelected(microphoneDropdown);
+            });
+        }
     }
 
     void OnMicrophoneSelected(TMP_Dropdown dropdown)

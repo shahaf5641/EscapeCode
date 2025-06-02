@@ -30,7 +30,7 @@ public class WebCamInput : MonoBehaviour
     }
 
     public WebCamTexture webCamTexture;
-    public RenderTexture inputRT;
+    [SerializeField] public RenderTexture inputRT;
 
     public bool mirrorImage;
 
