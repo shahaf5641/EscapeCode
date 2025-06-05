@@ -13,41 +13,67 @@ public class AudioManager : MonoBehaviour
 
     [Header("Audio Sources")]
     public AudioSource musicSource;
-    public AudioSource sfxSource;
+    public List<AudioSource> sfxSources = new();
+    public AudioSource assistantSource;
 
     private Dictionary<AudioChannel, float> volumes = new();
 
-    void Start()
+    void Awake()
     {
-        LoadVolume(AudioChannel.Music, musicSlider, musicSource, "volume_music");
-        LoadVolume(AudioChannel.SFX, sfxSlider, sfxSource, "volume_sfx");
+        // Apply saved volumes before anything else plays audio
+        ApplyInitialVolume(AudioChannel.Music, "volume_music", musicSource);
+        ApplyInitialVolume(AudioChannel.SFX, "volume_sfx", sfxSources);
+        ApplyInitialVolume(AudioChannel.Assistant, "volume_assistant", assistantSource);
     }
 
-    private void LoadVolume(AudioChannel channel, Slider slider, AudioSource source, string key)
+    void Start()
     {
-        float savedVolume = PlayerPrefs.GetFloat(key, 0.5f);
-        volumes[channel] = savedVolume;
-        source.volume = savedVolume;
-        slider.value = savedVolume;
+        InitSlider(AudioChannel.Music, musicSlider, "volume_music");
+        InitSlider(AudioChannel.SFX, sfxSlider, "volume_sfx");
+        InitSlider(AudioChannel.Assistant, assistantSlider, "volume_assistant");
+    }
 
-        slider.onValueChanged.AddListener((value) => {
-            SetVolume(channel, value);
-        });
+    void ApplyInitialVolume(AudioChannel channel, string key, AudioSource source)
+    {
+        float volume = PlayerPrefs.GetFloat(key, 0.5f);
+        volumes[channel] = volume;
+        if (source != null) source.volume = volume;
+    }
+
+    void ApplyInitialVolume(AudioChannel channel, string key, List<AudioSource> sources)
+    {
+        float volume = PlayerPrefs.GetFloat(key, 0.5f);
+        volumes[channel] = volume;
+        foreach (var src in sources)
+            if (src != null) src.volume = volume;
+    }
+
+    void InitSlider(AudioChannel channel, Slider slider, string key)
+    {
+        float volume = volumes.ContainsKey(channel) ? volumes[channel] : 0.5f;
+        if (slider != null)
+        {
+            slider.value = volume;
+            slider.onValueChanged.AddListener((v) => SetVolume(channel, v));
+        }
     }
 
     public void SetVolume(AudioChannel channel, float value)
     {
         volumes[channel] = value;
+        PlayerPrefs.SetFloat($"volume_{channel.ToString().ToLower()}", value);
 
         switch (channel)
         {
             case AudioChannel.Music:
-                musicSource.volume = value;
-                PlayerPrefs.SetFloat("volume_music", value);
+                if (musicSource != null) musicSource.volume = value;
                 break;
             case AudioChannel.SFX:
-                sfxSource.volume = value;
-                PlayerPrefs.SetFloat("volume_sfx", value);
+                foreach (var src in sfxSources)
+                    if (src != null) src.volume = value;
+                break;
+            case AudioChannel.Assistant:
+                if (assistantSource != null) assistantSource.volume = value;
                 break;
         }
 
@@ -56,6 +82,6 @@ public class AudioManager : MonoBehaviour
 
     public float GetVolume(AudioChannel channel)
     {
-        return volumes.ContainsKey(channel) ? volumes[channel] : 1f;
+        return volumes.TryGetValue(channel, out float val) ? val : 1f;
     }
 }

@@ -7,10 +7,9 @@ public class EyeTrackingToggle : MonoBehaviour
     public GameObject eyeTrackingObject;
     public Button toggleButton;
     public TMP_Text buttonText;
-
-    public Button calibrationButton;     
-    public TMP_Text calibrationText;       
-
+    public Button calibrationButton;
+    public TMP_Text calibrationText;
+    public MicToVirtualClick micClick;
     private bool isEnabled;
 
     void Start()
@@ -60,4 +59,16 @@ public class EyeTrackingToggle : MonoBehaviour
                 calibrationText.color = isEnabled ? Color.white : Color.gray;
         }
     }
+    public void ToggleVoiceAndMicClick()
+    {
+        micClick.enabled = !micClick.enabled;
+
+        if (micClick.enabled)
+        {
+            micClick.ActivateMic(); // ✅ now it starts the selected mic!
+        }
+
+        Debug.Log("🎙️ Mic Click is now " + (micClick.enabled ? "ON" : "OFF"));
+    }
+
 }

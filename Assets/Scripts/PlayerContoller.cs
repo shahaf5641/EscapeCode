@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
     NavMeshAgent agent;
     Animator animator;
     private bool isWalking = false;
+    private AudioSource walkSource;
+
     [SerializeField] private AudioSource walkLoopSound;
 
     [Header("Movement")]

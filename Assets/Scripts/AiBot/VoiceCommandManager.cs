@@ -9,6 +9,7 @@ public class VoiceCommandManager : MonoBehaviour
     private bool isCoolingDown = false;
     public ChatGPTClient chatGPT;
     public CodeWindowManager codeWindow;
+    public MicToVirtualClick micClick;
     public TMPro.TextMeshProUGUI userTextDisplay;
     public UnityEngine.UI.Button recordToggleButton;
     public TMPro.TextMeshProUGUI recordToggleLabel;
@@ -17,6 +18,7 @@ public class VoiceCommandManager : MonoBehaviour
 
     public void ToggleRecording()
     {
+
         if (!isRecording)
         {
             StartVoiceCommand();
