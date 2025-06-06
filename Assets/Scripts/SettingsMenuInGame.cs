@@ -6,13 +6,7 @@ public class SettingsMenuInGame : MonoBehaviour
 {
     public GameObject settingsPanel;
     public GameObject settingsButton;
-    public TMP_Text buttonText;
 
-    void Start()
-    {
-        buttonText.color = Color.white;
-        
-    }
     public void ToggleSettings()
     {
         bool isNowActive = !settingsPanel.activeSelf;

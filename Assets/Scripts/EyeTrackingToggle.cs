@@ -12,6 +12,8 @@ public class EyeTrackingToggle : MonoBehaviour
     public MicToVirtualClick micClick;
     public TMP_Dropdown micDropdown;
     public TMP_Dropdown camDropdown;
+    public TMP_Text micDropdownLabel;
+    public TMP_Text camDropdownLabel;
     public GameObject volumeBarUI;
 
     private bool isEnabled;
@@ -19,6 +21,13 @@ public class EyeTrackingToggle : MonoBehaviour
     void Start()
     {
         bool hasCamera = WebCamTexture.devices.Length > 0;
+
+        // Always force OFF when scene starts
+        PlayerPrefs.SetInt("EyeTrackingEnabled", 0);
+        PlayerPrefs.Save();
+
+        isEnabled = false;
+        eyeTrackingObject.SetActive(false);
 
         if (!hasCamera)
         {
@@ -32,13 +41,10 @@ public class EyeTrackingToggle : MonoBehaviour
             return;
         }
 
-        isEnabled = PlayerPrefs.GetInt("EyeTrackingEnabled", 0) == 1;
-        eyeTrackingObject.SetActive(isEnabled);
-
         UpdateButtonStates();
-
         toggleButton.onClick.AddListener(ToggleEyeTracking);
     }
+
 
     void ToggleEyeTracking()
     {
@@ -62,12 +68,19 @@ public class EyeTrackingToggle : MonoBehaviour
                 calibrationText.color = isEnabled ? Color.white : Color.gray;
         }
 
-        if (micDropdown != null)
-            micDropdown.interactable = isEnabled;
+    if (micDropdown != null)
+    {
+        micDropdown.interactable = isEnabled;
+        if (micDropdownLabel != null)
+            micDropdownLabel.color = isEnabled ? Color.white : Color.gray;
+    }
 
-        if (camDropdown != null)
-            camDropdown.interactable = isEnabled;
-
+    if (camDropdown != null)
+    {
+        camDropdown.interactable = isEnabled;
+        if (camDropdownLabel != null)
+            camDropdownLabel.color = isEnabled ? Color.white : Color.gray;
+    }
         if (volumeBarUI != null)
             volumeBarUI.SetActive(isEnabled);
     }
