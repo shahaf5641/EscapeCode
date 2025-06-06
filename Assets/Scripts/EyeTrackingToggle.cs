@@ -11,6 +11,9 @@ public class EyeTrackingToggle : MonoBehaviour
     public TMP_Text calibrationText;
     public MicToVirtualClick micClick;
     private bool isEnabled;
+    public TMP_Dropdown micDropdown;
+    public TMP_Dropdown camDropdown;
+
 
     void Start()
     {
@@ -58,7 +61,14 @@ public class EyeTrackingToggle : MonoBehaviour
             if (calibrationText != null)
                 calibrationText.color = isEnabled ? Color.white : Color.gray;
         }
+
+        if (micDropdown != null)
+            micDropdown.interactable = isEnabled;
+            
+        if (camDropdown != null)
+            camDropdown.interactable = isEnabled;
     }
+
     public void ToggleVoiceAndMicClick()
     {
         micClick.enabled = !micClick.enabled;

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using TMPro;
 using System.Linq;
+using UnityEngine.UI;
 
 public class MicToVirtualClick : MonoBehaviour
 {
@@ -23,14 +24,30 @@ public class MicToVirtualClick : MonoBehaviour
     private string micName;
     private int sampleWindow = 128;
     private Coroutine micCheckRoutine;
+    public Slider volumeBar;
+    public RectTransform thresholdMarker;
+
 
     void Start()
     {
+        volumeBar.minValue = 0f;
+        volumeBar.maxValue = 1f;
+        loudnessThreshold = Mathf.Clamp01(loudnessThreshold);
+
         PopulateMicDropdown();
 
         if (micDropdown != null)
         {
             micDropdown.onValueChanged.AddListener(OnMicDropdownChanged);
+        }
+
+        string savedMic = PlayerPrefs.GetString("selected_mic", null);
+        if (!string.IsNullOrEmpty(savedMic) && Microphone.devices.Contains(savedMic))
+        {
+            micName = savedMic;
+            int index = Microphone.devices.ToList().IndexOf(savedMic);
+            micDropdown.value = index;
+            micDropdown.RefreshShownValue();
         }
     }
 
@@ -60,6 +77,8 @@ public class MicToVirtualClick : MonoBehaviour
 
     void PopulateMicDropdown()
     {
+        if (micDropdown == null) return;
+
         var micList = Microphone.devices.ToList();
         if (micList.Count == 0)
         {
@@ -67,26 +86,17 @@ public class MicToVirtualClick : MonoBehaviour
             return;
         }
 
-        string currentSelection = micDropdown.options.Count > 0 && micDropdown.value < micDropdown.options.Count
-            ? micDropdown.options[micDropdown.value].text
-            : null;
-
         micDropdown.ClearOptions();
         micDropdown.AddOptions(micList);
-
-        // Restore selection if still available
-        if (!string.IsNullOrEmpty(currentSelection) && micList.Contains(currentSelection))
-        {
-            micDropdown.value = micList.IndexOf(currentSelection);
-        }
-
         micDropdown.RefreshShownValue();
     }
-
 
     void OnMicDropdownChanged(int index)
     {
         string newMic = micDropdown.options[index].text;
+        PlayerPrefs.SetString("selected_mic", newMic);
+        PlayerPrefs.Save();
+
         StopMic();
         StartMic(newMic);
     }
@@ -129,30 +139,64 @@ public class MicToVirtualClick : MonoBehaviour
         micClip = null;
     }
 
-    IEnumerator CheckMicVolume()
+IEnumerator CheckMicVolume()
+{
+    while (true)
     {
-        while (true)
+        float volume = GetLoudness();
+
+        // Update volume bar
+        if (volumeBar != null)
+            volumeBar.value = volume;
+
+        // Update threshold marker position
+        UpdateThresholdMarker();
+
+        // Click only if volume passes threshold
+        if (volume > loudnessThreshold && Time.time - lastClickTime > clickCooldown)
         {
-            float volume = GetLoudness();
-            if (volume > loudnessThreshold && Time.time - lastClickTime > clickCooldown)
-            {
-                Debug.Log("🔊 Mic triggered real click");
-                TriggerVirtualClick();
-                lastClickTime = Time.time;
-            }
-            yield return new WaitForSeconds(checkInterval);
+            Debug.Log("🔊 Mic triggered real click");
+            TriggerVirtualClick();
+            lastClickTime = Time.time;
         }
+
+        yield return new WaitForSeconds(checkInterval);
     }
+}
+
+    void UpdateThresholdMarker()
+    {
+        if (thresholdMarker == null || volumeBar == null)
+            return;
+
+        // Get the width of the full background (not the fill amount)
+        RectTransform barRect = volumeBar.GetComponent<RectTransform>();
+        float barWidth = barRect.rect.width;
+
+        // Normalize threshold value within [0, 1]
+        float normalizedThreshold = Mathf.Clamp01(loudnessThreshold / volumeBar.maxValue);
+
+        // Convert normalized threshold to anchored X position
+        float anchoredX = barWidth * normalizedThreshold;
+
+        // Set the marker's anchored position (keep Y position unchanged)
+        thresholdMarker.anchoredPosition = new Vector2(anchoredX, thresholdMarker.anchoredPosition.y);
+    }
+
+
+
 
     float GetLoudness()
     {
-        if (micClip == null) return 0f;
+        if (micClip == null || string.IsNullOrEmpty(micName) || !Microphone.IsRecording(micName))
+            return 0f;
 
-        int micPosition = Microphone.GetPosition(micName) - sampleWindow;
-        if (micPosition < 0) return 0;
+        int micPosition = Microphone.GetPosition(micName);
+        if (micPosition < sampleWindow)
+            return 0f; // Not enough data yet
 
         float[] samples = new float[sampleWindow];
-        micClip.GetData(samples, Mathf.Max(micPosition, 0));
+        micClip.GetData(samples, micPosition - sampleWindow);
 
         float sum = 0f;
         foreach (float sample in samples)
@@ -160,6 +204,7 @@ public class MicToVirtualClick : MonoBehaviour
 
         return Mathf.Sqrt(sum / sampleWindow);
     }
+
 
     void TriggerVirtualClick()
     {

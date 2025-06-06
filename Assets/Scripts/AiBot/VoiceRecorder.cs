@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.IO;
-using System.Collections.Generic;
+using TMPro;
 
 public class VoiceRecorder : MonoBehaviour
 {
@@ -9,24 +9,42 @@ public class VoiceRecorder : MonoBehaviour
     private bool isRecording = false;
     private string filePath;
 
-    void Start()
+    private TMP_Dropdown micDropdown;
+
+    void Awake()
     {
         filePath = Path.Combine(Application.persistentDataPath, fileName);
+
+        MicToVirtualClick micClick = FindObjectOfType<MicToVirtualClick>(true);
+        if (micClick != null)
+        {
+            micDropdown = micClick.micDropdown;
+        }
     }
 
     public void StartRecording()
     {
         if (Microphone.devices.Length == 0)
         {
-            Debug.LogError("No microphone detected.");
+            Debug.LogError("❌ No microphone detected.");
             return;
         }
 
-        string selectedMic = Microphone.devices[0]; // try index 0 or 1
-        Debug.Log("Using mic: " + selectedMic);
+        string selectedMic = null;
+
+        if (micDropdown != null && micDropdown.options.Count > 0)
+        {
+            selectedMic = micDropdown.options[micDropdown.value].text;
+        }
+        else
+        {
+            selectedMic = Microphone.devices[0];
+            Debug.LogWarning("🎤 Microphone dropdown missing or empty. Falling back to default mic: " + selectedMic);
+        }
+
         recordedClip = Microphone.Start(selectedMic, false, 10, 44100);
         isRecording = true;
-        Debug.Log("Recording started...");
+        Debug.Log("🎬 Recording started using: " + selectedMic);
     }
 
     public void StopRecordingAndSave()
@@ -38,18 +56,14 @@ public class VoiceRecorder : MonoBehaviour
 
         if (recordedClip == null)
         {
-            Debug.LogError("Recorded clip is null!");
+            Debug.LogError("❌ Recorded clip is null!");
             return;
         }
 
-        var samples = new float[recordedClip.samples * recordedClip.channels];
-        recordedClip.GetData(samples, 0);
-        // Save the audio to WAV
         byte[] wavBytes = WavUtility.FromAudioClip(recordedClip);
         File.WriteAllBytes(filePath, wavBytes);
-        Debug.Log("Saved to: " + filePath);
+        Debug.Log("✅ Audio saved to: " + filePath);
     }
-
 
     public string GetSavedFilePath() => filePath;
 }
