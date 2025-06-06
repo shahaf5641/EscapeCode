@@ -9,16 +9,13 @@ public class MicToVirtualClick : MonoBehaviour
 {
     [DllImport("user32.dll")]
     private static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
-
+    public Slider thresholdSlider;
     private const int MOUSEEVENTF_LEFTDOWN = 0x0002;
     private const int MOUSEEVENTF_LEFTUP = 0x0004;
-
     public float loudnessThreshold = 0.1f;
     public float checkInterval = 0.1f;
     public float clickCooldown = 0.5f;
-
     public TMP_Dropdown micDropdown;
-
     private float lastClickTime = 0f;
     private AudioClip micClip;
     private string micName;
@@ -30,26 +27,46 @@ public class MicToVirtualClick : MonoBehaviour
 
     void Start()
     {
-        volumeBar.minValue = 0f;
-        volumeBar.maxValue = 1f;
-        loudnessThreshold = Mathf.Clamp01(loudnessThreshold);
+        // Volume bar setup
+        if (volumeBar != null)
+        {
+            volumeBar.minValue = 0f;
+            volumeBar.maxValue = 1f;
+        }
 
+        // Load threshold from PlayerPrefs if available
+        loudnessThreshold = Mathf.Clamp01(PlayerPrefs.GetFloat("threshold_value", loudnessThreshold));
+
+        // Set up threshold slider (if assigned)
+        if (thresholdSlider != null)
+        {
+            thresholdSlider.minValue = 0f;
+            thresholdSlider.maxValue = 1f;
+            thresholdSlider.value = loudnessThreshold;
+            thresholdSlider.onValueChanged.AddListener(UpdateThresholdFromSlider);
+        }
+
+        // Initial marker and value
+        UpdateThresholdUI();
+
+        // Populate mic dropdown
         PopulateMicDropdown();
 
         if (micDropdown != null)
         {
             micDropdown.onValueChanged.AddListener(OnMicDropdownChanged);
-        }
 
-        string savedMic = PlayerPrefs.GetString("selected_mic", null);
-        if (!string.IsNullOrEmpty(savedMic) && Microphone.devices.Contains(savedMic))
-        {
-            micName = savedMic;
-            int index = Microphone.devices.ToList().IndexOf(savedMic);
-            micDropdown.value = index;
-            micDropdown.RefreshShownValue();
+            string savedMic = PlayerPrefs.GetString("selected_mic", null);
+            if (!string.IsNullOrEmpty(savedMic) && Microphone.devices.Contains(savedMic))
+            {
+                micName = savedMic;
+                int index = Microphone.devices.ToList().IndexOf(savedMic);
+                micDropdown.value = index;
+                micDropdown.RefreshShownValue();
+            }
         }
     }
+
 
     public void ActivateMic()
     {
@@ -138,54 +155,43 @@ public class MicToVirtualClick : MonoBehaviour
 
         micClip = null;
     }
-
-IEnumerator CheckMicVolume()
-{
-    while (true)
+    IEnumerator CheckMicVolume()
     {
-        float volume = GetLoudness();
-
-        // Update volume bar
-        if (volumeBar != null)
-            volumeBar.value = volume;
-
-        // Update threshold marker position
-        UpdateThresholdMarker();
-
-        // Click only if volume passes threshold
-        if (volume > loudnessThreshold && Time.time - lastClickTime > clickCooldown)
+        while (true)
         {
-            Debug.Log("🔊 Mic triggered real click");
-            TriggerVirtualClick();
-            lastClickTime = Time.time;
+            float volume = GetLoudness();
+
+            // Update volume bar
+            if (volumeBar != null)
+                volumeBar.value = volume;
+
+            // Update threshold marker position
+            UpdateThresholdMarker();
+
+            // Click only if volume passes threshold
+            if (volume > loudnessThreshold && Time.time - lastClickTime > clickCooldown)
+            {
+                Debug.Log("🔊 Mic triggered real click");
+                TriggerVirtualClick();
+                lastClickTime = Time.time;
+            }
+
+            yield return new WaitForSeconds(checkInterval);
         }
-
-        yield return new WaitForSeconds(checkInterval);
     }
-}
-
     void UpdateThresholdMarker()
     {
         if (thresholdMarker == null || volumeBar == null)
             return;
 
-        // Get the width of the full background (not the fill amount)
-        RectTransform barRect = volumeBar.GetComponent<RectTransform>();
-        float barWidth = barRect.rect.width;
-
-        // Normalize threshold value within [0, 1]
+        // Normalize threshold
         float normalizedThreshold = Mathf.Clamp01(loudnessThreshold / volumeBar.maxValue);
 
-        // Convert normalized threshold to anchored X position
-        float anchoredX = barWidth * normalizedThreshold;
-
-        // Set the marker's anchored position (keep Y position unchanged)
-        thresholdMarker.anchoredPosition = new Vector2(anchoredX, thresholdMarker.anchoredPosition.y);
+        // Set anchors for vertical placement (Y only)
+        thresholdMarker.anchorMin = new Vector2(0, normalizedThreshold);
+        thresholdMarker.anchorMax = new Vector2(1, normalizedThreshold);
+        thresholdMarker.anchoredPosition = Vector2.zero; // Reset offset
     }
-
-
-
-
     float GetLoudness()
     {
         if (micClip == null || string.IsNullOrEmpty(micName) || !Microphone.IsRecording(micName))
@@ -214,5 +220,15 @@ IEnumerator CheckMicVolume()
 
         mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, x, y, 0, 0);
         Debug.Log("🖱️ Real mouse click simulated at: " + pos);
+    }
+    void UpdateThresholdFromSlider(float value)
+    {
+        loudnessThreshold = value;
+        UpdateThresholdUI();
+    }
+
+    void UpdateThresholdUI()
+    {
+        UpdateThresholdMarker();
     }
 }

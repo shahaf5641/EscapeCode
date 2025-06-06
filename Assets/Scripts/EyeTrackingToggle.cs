@@ -10,10 +10,11 @@ public class EyeTrackingToggle : MonoBehaviour
     public Button calibrationButton;
     public TMP_Text calibrationText;
     public MicToVirtualClick micClick;
-    private bool isEnabled;
     public TMP_Dropdown micDropdown;
     public TMP_Dropdown camDropdown;
+    public GameObject volumeBarUI;
 
+    private bool isEnabled;
 
     void Start()
     {
@@ -21,9 +22,6 @@ public class EyeTrackingToggle : MonoBehaviour
 
         if (!hasCamera)
         {
-            toggleButton.interactable = false;
-            buttonText.color = Color.gray;
-
             if (calibrationButton != null)
             {
                 calibrationButton.interactable = false;
@@ -36,6 +34,7 @@ public class EyeTrackingToggle : MonoBehaviour
 
         isEnabled = PlayerPrefs.GetInt("EyeTrackingEnabled", 0) == 1;
         eyeTrackingObject.SetActive(isEnabled);
+
         UpdateButtonStates();
 
         toggleButton.onClick.AddListener(ToggleEyeTracking);
@@ -47,6 +46,7 @@ public class EyeTrackingToggle : MonoBehaviour
         eyeTrackingObject.SetActive(isEnabled);
         PlayerPrefs.SetInt("EyeTrackingEnabled", isEnabled ? 1 : 0);
         PlayerPrefs.Save();
+
         UpdateButtonStates();
     }
 
@@ -64,9 +64,12 @@ public class EyeTrackingToggle : MonoBehaviour
 
         if (micDropdown != null)
             micDropdown.interactable = isEnabled;
-            
+
         if (camDropdown != null)
             camDropdown.interactable = isEnabled;
+
+        if (volumeBarUI != null)
+            volumeBarUI.SetActive(isEnabled);
     }
 
     public void ToggleVoiceAndMicClick()
@@ -75,10 +78,9 @@ public class EyeTrackingToggle : MonoBehaviour
 
         if (micClick.enabled)
         {
-            micClick.ActivateMic(); // ✅ now it starts the selected mic!
+            micClick.ActivateMic();
         }
 
         Debug.Log("🎙️ Mic Click is now " + (micClick.enabled ? "ON" : "OFF"));
     }
-
 }
