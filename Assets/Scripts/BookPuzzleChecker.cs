@@ -19,7 +19,7 @@ public class BookInteraction : MonoBehaviour
         if (isSolved || codeWindow == null) return;
 
         FindFirstObjectByType<ChatGPTClient>().currentPuzzle = this.gameObject;
-
+        GetComponent<GlowEffect>()?.MarkInteracted();
         string problemTitle = "Secret Code";
 
         string problemDescription =
@@ -53,6 +53,8 @@ secret_code = ""________""";
         successSound.PlayOneShot(successSound.clip);
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Book solved!");
         audioSource.PlayOneShot(chestFallSound);
+        chestObject.GetComponent<GlowEffect>().StartGlow();          // start Chest glow
+
 
         if (chestObject != null)
         {

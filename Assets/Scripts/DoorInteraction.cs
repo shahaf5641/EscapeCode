@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 public class DoorInteraction : MonoBehaviour
 {
     public CodeWindowManager codeWindow;
+    [SerializeField] public GameObject buttonObject;
     private bool doorOpened = false;
     public string puzzleType = "door";
     [SerializeField] private AudioSource successSound;
@@ -15,6 +16,8 @@ public class DoorInteraction : MonoBehaviour
 
     void OnMouseDown()
     {
+        GetComponent<GlowEffect>()?.MarkInteracted();
+        buttonObject.GetComponent<GlowEffect>().StartGlow();
         if (doorOpened || codeWindow == null) return;
 
         string pressedButtonValue = PuzzleState.pressedButton ? "True" : "False";

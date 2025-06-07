@@ -4,7 +4,7 @@ public class PressableButton : MonoBehaviour
 {
     public Material redMaterial;
     public Material greenMaterial;
-
+    [SerializeField] public GameObject doorObject;
     private bool isPressed = false;
     private Renderer rend;
 
@@ -16,6 +16,9 @@ public class PressableButton : MonoBehaviour
 
     void OnMouseDown()
     {
+        GetComponent<GlowEffect>()?.MarkInteracted();
+        doorObject.GetComponent<GlowEffect>().ResetInteraction();
+        doorObject.GetComponent<GlowEffect>().StartGlow();
         if (!isPressed)
         {
             isPressed = true;

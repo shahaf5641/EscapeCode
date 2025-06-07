@@ -11,6 +11,8 @@ public class ChestInteraction : MonoBehaviour
     private bool chestOpened = false;
     void OnMouseDown()
     {
+        GetComponent<GlowEffect>()?.MarkInteracted();
+
         if (chestOpened || codeWindow == null) return;
         string problemDescription = 
 @"The chest won’t budge — it’s sealed by logic, not a lock.
@@ -47,7 +49,7 @@ if has_key_code:
         successSound.PlayOneShot(successSound.clip);
         chestOpened = true;
         gameObject.GetComponent<BoxCollider>().enabled = false;
-
+        keyObject.GetComponent<GlowEffect>().StartGlow();
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Chest solved!");
         gameObject.tag = "Untagged";
         gameObject.layer = LayerMask.NameToLayer("Default");
