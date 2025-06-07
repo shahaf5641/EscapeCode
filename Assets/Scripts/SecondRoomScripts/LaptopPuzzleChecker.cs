@@ -12,6 +12,7 @@ public class LaptopInteraction : MonoBehaviour
     [SerializeField] private GameObject passwordPanel;
 void OnMouseDown()
 {
+    GetComponent<GlowEffect>()?.MarkInteracted();
     PlayerController.IsMovementLocked = true;
     if (isSolved || codeWindow == null) return;
 
@@ -49,6 +50,7 @@ for status in servers_status:
         isSolved = true;
         PlayerController.IsMovementLocked = true;
         successSound.PlayOneShot(successSound.clip);
+        passwordPanel.GetComponent<GlowEffect>().StartGlow();
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Message sent!");
         var collider = passwordPanel.GetComponent<BoxCollider>();
         var thisCollider = GetComponent<BoxCollider>();

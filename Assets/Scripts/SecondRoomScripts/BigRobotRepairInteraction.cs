@@ -13,11 +13,13 @@ public class BigRobotRepairInteraction : MonoBehaviour
     [SerializeField] private Unity.Cinemachine.CinemachineCamera robotGameplayCam;
     [SerializeField] private Transform robotTargetPoint;
     [SerializeField] private BoxCollider finalDoorCollider;
+    [SerializeField] private GameObject finalDoorObject;
     private bool isSolved = false;
     public string puzzleType = "robot";
 
 void OnMouseDown()
 {
+    GetComponent<GlowEffect>()?.MarkInteracted();
     PlayerController.IsMovementLocked = true;
     clickSound.PlayOneShot(clickSound.clip);
 
@@ -59,6 +61,7 @@ if log == [110, 120, 230, 240, 450, 460, 670, 680]:
     }
     private void OnSolved()
     {
+        finalDoorObject.GetComponent<GlowEffect>()?.StartGlow();
         isSolved = true;
         BigRobotController.IsMovementLocked = true;
         finalDoorCollider.enabled = true;

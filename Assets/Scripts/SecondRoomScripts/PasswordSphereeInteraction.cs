@@ -7,9 +7,12 @@ public class PasswordSphereeInteraction : MonoBehaviour
     public CodeWindowManager codeWindow;
     public string puzzleType = "password";
     [SerializeField] private AudioSource successSound;
+    [SerializeField] private GameObject bigRobot;
+
 
 void OnMouseDown()
 {
+    GetComponent<GlowEffect>()?.MarkInteracted();
     if (isSolved || codeWindow == null) return;
 
     PlayerController.IsMovementLocked = true;
@@ -53,6 +56,7 @@ if password == 4312:
     {
         isSolved = true;
         PlayerController.IsMovementLocked = true;
+        bigRobot.GetComponent<GlowEffect>().StartGlow();
         var thisCollider = GetComponent<BoxCollider>();
         if (thisCollider != null)
             thisCollider.enabled = false;

@@ -14,6 +14,8 @@ public class FinalDoorInteraction : MonoBehaviour
     private bool isSolved = false;
 void OnMouseDown()
 {
+    GetComponent<GlowEffect>()?.MarkInteracted();
+
     if (isSolved || codeWindow == null) return;
 
     if (sound != null)
