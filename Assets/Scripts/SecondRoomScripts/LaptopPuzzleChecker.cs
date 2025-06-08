@@ -37,7 +37,8 @@ for status in servers_status:
         problemDescription,
         problemCode,
         CheckLaptopCode,
-        OnLaptopSolved
+        OnLaptopSolved,
+        this.gameObject
     );
 }
 

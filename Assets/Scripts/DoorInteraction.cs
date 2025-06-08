@@ -49,7 +49,8 @@ else:
             problemDescription,
             problemCode,
             CheckDoorCode,
-            OnDoorSolved
+            OnDoorSolved,
+            this.gameObject
         );
     }
     private bool CheckDoorCode(string userCode)

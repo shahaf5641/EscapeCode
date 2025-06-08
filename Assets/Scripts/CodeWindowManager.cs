@@ -25,9 +25,11 @@ public class CodeWindowManager : MonoBehaviour
     public RectTransform modeCircle;
     public Vector3 onLocalPos;
     public Vector3 offLocalPos;
+    private GameObject currentSourceObject;
+    private Collider currentSourceCollider;
+    private HashSet<GameObject> streamedObjects = new();
     private string fullChatLog = "";
     [SerializeField] private ScrollRect chatScrollRect;
-
     public static bool IsOpen { get; private set; }
     void Start()
     {
@@ -58,34 +60,76 @@ public class CodeWindowManager : MonoBehaviour
         }
     }
 
-    public void Open(string problemTitle, string problemDescription, string problemCode, Func<string, bool> checkFunc, Action successCallback)
+    public void Open(string problemTitle, string problemDescription, string problemCode, Func<string, bool> checkFunc, Action successCallback, GameObject sourceObject)
     {
         panel.SetActive(true);
+        if (sourceObject != null)
+        {
+            currentSourceObject = sourceObject;
+            currentSourceCollider = sourceObject.GetComponent<Collider>();
+            if (currentSourceCollider != null)
+                currentSourceCollider.enabled = false;
+        }
+
         PlayerController.IsMovementLocked = true;
         BigRobotController.IsMovementLocked = true;
+
         if (FindFirstObjectByType<ChatGPTClient>().currentPuzzle.TryGetComponent(out PuzzleContextFormatter currentPuzzleFormatter))
         {
             if (lastPuzzleFormatter != currentPuzzleFormatter)
             {
-                currentPuzzleFormatter.NextHintIndex = 0; // ✅ Only reset if different puzzle
-                lastPuzzleFormatter = currentPuzzleFormatter; // ✅ Update the last opened
+                currentPuzzleFormatter.NextHintIndex = 0;
+                lastPuzzleFormatter = currentPuzzleFormatter;
             }
         }
+
         IsOpen = true;
-        StartCoroutine(SetContentDelayed(problemTitle, problemDescription, problemCode, checkFunc, successCallback));
+
+        bool shouldStream = !streamedObjects.Contains(sourceObject);
+        if (shouldStream) streamedObjects.Add(sourceObject);
+
+        StartCoroutine(SetContentDelayed(problemTitle, problemDescription, problemCode, checkFunc, successCallback, shouldStream));
     }
 
 
-    private IEnumerator SetContentDelayed(string problemTitle, string problemDescription, string problemCode, Func<string, bool> checkFunc, Action successCallback)
+    private IEnumerator TypeText(TextMeshProUGUI target, string fullText, float charDelay = 0.02f)
+    {
+        target.text = "";
+        foreach (char c in fullText)
+        {
+            target.text += c;
+            yield return new WaitForSeconds(charDelay);
+        }
+    }
+
+
+
+    private IEnumerator SetContentDelayed(string problemTitle, string problemDescription, string problemCode, Func<string, bool> checkFunc, Action successCallback, bool stream)
     {
         yield return null;
         problemTitleText.text = problemTitle;
-        problemDescText.text = problemDescription;
-        problemCodeText.text = AddLineNumbers(problemCode);
+
+        if (stream)
+        {
+            // Stream description first
+            yield return StartCoroutine(TypeText(problemDescText, problemDescription));
+
+            // Then stream code after description finishes
+            yield return StartCoroutine(TypeText(problemCodeText, AddLineNumbers(problemCode), 0.02f));
+        }
+        else
+        {
+            problemDescText.text = problemDescription;
+            problemCodeText.text = AddLineNumbers(problemCode);
+        }
+
         solveCheck = checkFunc;
         onSolved = successCallback;
         solved = false;
     }
+
+
+
 
     public void Submit()
     {
@@ -118,7 +162,16 @@ public class CodeWindowManager : MonoBehaviour
         panel.SetActive(false);
         PlayerController.IsMovementLocked = false;
         BigRobotController.IsMovementLocked = false;
+
+        if (currentSourceCollider != null)
+        {
+            currentSourceCollider.enabled = true;
+            currentSourceCollider = null;
+        }
+
+        currentSourceObject = null;
     }
+
 
     public void EnableCodeMode() => switcher2.isOnNullable = true;
 
@@ -131,13 +184,38 @@ public class CodeWindowManager : MonoBehaviour
     }
     public void AppendChatLine(string userMessage, string aiMessage)
     {
-        fullChatLog += $"<color=#00c3ff><b>YOU:</b></color> {userMessage}\n<color=#ffc300><b>AI:</b></color> {aiMessage}\n\n";
-        chatHistoryDisplay.text = fullChatLog;
+        StartCoroutine(StreamChat(userMessage, aiMessage));
+    }
+    private IEnumerator StreamChat(string userMessage, string aiMessage)
+    {
+        string userPrefix = "<color=#00c3ff><b>YOU:</b></color> ";
+        string aiPrefix = "<color=#ffc300><b>AI:</b></color> ";
 
-        // Scroll to bottom after canvas updates
+        string userLine = userPrefix;
+        string aiLine = aiPrefix;
+
+        // Stream user message
+        chatHistoryDisplay.text += userLine;
+        yield return StartCoroutine(StreamMessage(userMessage, chatHistoryDisplay));
+
+        chatHistoryDisplay.text += "\n" + aiLine;
+        yield return StartCoroutine(StreamMessage(aiMessage, chatHistoryDisplay));
+
+        chatHistoryDisplay.text += "\n\n";
+
+        // Scroll to bottom
         Canvas.ForceUpdateCanvases();
         chatScrollRect.verticalNormalizedPosition = 0f;
     }
+    private IEnumerator StreamMessage(string message, TextMeshProUGUI target, float charDelay = 0.02f)
+    {
+        for (int i = 0; i < message.Length; i++)
+        {
+            target.text += message[i];
+            yield return new WaitForSeconds(charDelay);
+        }
+    }
+
     public string AddLineNumbers(string text)
     {
         var lines = text.Split('\n');

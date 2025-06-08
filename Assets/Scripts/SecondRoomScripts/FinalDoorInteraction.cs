@@ -46,7 +46,8 @@ if answer == [1, 2]:
         problemDescription,
         problemCode,
         CheckAnswer,
-        OnSolved
+        OnSolved,
+        this.gameObject
     );
 }
 

@@ -33,7 +33,8 @@ if has_key_code:
             problemDescription,
             problemCode,
             CheckChestCode,
-            OnChestSolved
+            OnChestSolved,
+            this.gameObject
         );
     }
 

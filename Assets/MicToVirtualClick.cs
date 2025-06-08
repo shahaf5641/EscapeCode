@@ -24,7 +24,6 @@ public class MicToVirtualClick : MonoBehaviour
     public Slider volumeBar;
     public RectTransform thresholdMarker;
 
-
     void Start()
     {
         // Volume bar setup
@@ -194,15 +193,22 @@ public class MicToVirtualClick : MonoBehaviour
     }
     float GetLoudness()
     {
-        if (micClip == null || string.IsNullOrEmpty(micName) || !Microphone.IsRecording(micName))
-            return 0f;
+        if (micClip == null || string.IsNullOrEmpty(micName)) return 0f;
 
-        int micPosition = Microphone.GetPosition(micName);
-        if (micPosition < sampleWindow)
-            return 0f; // Not enough data yet
+        int micPos = Microphone.GetPosition(micName);
+        if (micPos < sampleWindow) return 0f; // prevent negative index
 
+        int startPos = micPos - sampleWindow;
         float[] samples = new float[sampleWindow];
-        micClip.GetData(samples, micPosition - sampleWindow);
+        
+        try
+        {
+            micClip.GetData(samples, startPos);
+        }
+        catch
+        {
+            return 0f; // fail safe
+        }
 
         float sum = 0f;
         foreach (float sample in samples)
@@ -210,6 +216,7 @@ public class MicToVirtualClick : MonoBehaviour
 
         return Mathf.Sqrt(sum / sampleWindow);
     }
+
 
 
     void TriggerVirtualClick()

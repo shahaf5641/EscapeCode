@@ -42,7 +42,8 @@ if password == 4312:
         problemDescription,
         problemCode,
         CheckPasswordCode,
-        OnPasswordSolved
+        OnPasswordSolved,
+        this.gameObject
     );
 }
 

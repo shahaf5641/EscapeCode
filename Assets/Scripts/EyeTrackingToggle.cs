@@ -17,12 +17,13 @@ public class EyeTrackingToggle : MonoBehaviour
     public GameObject volumeBarUI;
 
     private bool isEnabled;
+    private bool hasCamera;
 
     void Start()
     {
-        bool hasCamera = WebCamTexture.devices.Length > 0;
+        hasCamera = WebCamTexture.devices.Length > 0;
 
-        // Always force OFF when scene starts
+        // Always start with eye tracking OFF
         PlayerPrefs.SetInt("EyeTrackingEnabled", 0);
         PlayerPrefs.Save();
 
@@ -31,20 +32,22 @@ public class EyeTrackingToggle : MonoBehaviour
 
         if (!hasCamera)
         {
-            if (calibrationButton != null)
-            {
-                calibrationButton.interactable = false;
-                if (calibrationText != null)
-                    calibrationText.color = Color.gray;
-            }
+            DisableAllControls(includeEyeToggle: true);
+            buttonText.text = "  off";
+        }
+        else
+        {
+            DisableAllControls(includeEyeToggle: false); // allow Eye Tracking only
+            buttonText.text = "  off";
+            toggleButton.interactable = true;
 
-            return;
+            if (buttonText != null)
+                buttonText.color = Color.white; // ← ADD THIS LINE
+
+            toggleButton.onClick.AddListener(ToggleEyeTracking);
         }
 
-        UpdateButtonStates();
-        toggleButton.onClick.AddListener(ToggleEyeTracking);
     }
-
 
     void ToggleEyeTracking()
     {
@@ -63,26 +66,56 @@ public class EyeTrackingToggle : MonoBehaviour
         if (calibrationButton != null)
         {
             calibrationButton.interactable = isEnabled;
-
             if (calibrationText != null)
                 calibrationText.color = isEnabled ? Color.white : Color.gray;
         }
 
-    if (micDropdown != null)
-    {
-        micDropdown.interactable = isEnabled;
-        if (micDropdownLabel != null)
-            micDropdownLabel.color = isEnabled ? Color.white : Color.gray;
-    }
+        if (micDropdown != null)
+        {
+            micDropdown.interactable = isEnabled;
+            if (micDropdownLabel != null)
+                micDropdownLabel.color = isEnabled ? Color.white : Color.gray;
+        }
 
-    if (camDropdown != null)
-    {
-        camDropdown.interactable = isEnabled;
-        if (camDropdownLabel != null)
-            camDropdownLabel.color = isEnabled ? Color.white : Color.gray;
-    }
+        if (camDropdown != null)
+        {
+            camDropdown.interactable = isEnabled;
+            if (camDropdownLabel != null)
+                camDropdownLabel.color = isEnabled ? Color.white : Color.gray;
+        }
+
         if (volumeBarUI != null)
             volumeBarUI.SetActive(isEnabled);
+    }
+
+    void DisableAllControls(bool includeEyeToggle)
+    {
+        if (includeEyeToggle && toggleButton != null)
+            toggleButton.interactable = false;
+
+        if (buttonText != null)
+            buttonText.color = Color.gray;
+
+        if (calibrationButton != null)
+            calibrationButton.interactable = false;
+
+        if (calibrationText != null)
+            calibrationText.color = Color.gray;
+
+        if (micDropdown != null)
+            micDropdown.interactable = false;
+
+        if (micDropdownLabel != null)
+            micDropdownLabel.color = Color.gray;
+
+        if (camDropdown != null)
+            camDropdown.interactable = false;
+
+        if (camDropdownLabel != null)
+            camDropdownLabel.color = Color.gray;
+
+        if (volumeBarUI != null)
+            volumeBarUI.SetActive(false);
     }
 
     public void ToggleVoiceAndMicClick()

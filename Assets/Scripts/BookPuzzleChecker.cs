@@ -37,7 +37,8 @@ secret_code = ""________""";
             problemDescription,
             problemCode,
             CheckBookCode,
-            OnBookSolved
+            OnBookSolved,
+            this.gameObject
         );
     }
 

@@ -50,7 +50,8 @@ if log == [110, 120, 230, 240, 450, 460, 670, 680]:
         problemDescription,
         problemCode,
         CheckAnswer,
-        OnSolved
+        OnSolved,
+        this.gameObject
     );
 }
 
