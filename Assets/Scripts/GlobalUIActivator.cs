@@ -3,25 +3,28 @@ using System.Collections;
 
 public class GlobalUIActivator : MonoBehaviour
 {
-    void Start()
+    IEnumerator Start()
     {
-        StartCoroutine(EnableHamburgerDelayed());
-    }
+        yield return new WaitForSeconds(0.1f); // wait enough time
 
-    IEnumerator EnableHamburgerDelayed()
-    {
-        // Wait 1 frame to ensure DontDestroyOnLoad objects are ready
-        yield return null;
-
-        GameObject hamburger = GameObject.Find("GlobalUICanvas");
-        if (hamburger != null)
+        GameObject btn = null;
+        foreach (Transform t in GameObject.FindObjectsOfType<Transform>(true))
         {
-            hamburger.SetActive(true);
-            Debug.Log("✅ GlobalUICanvas activated.");
+            if (t.name == "GlobalButtonMenu")
+            {
+                btn = t.gameObject;
+                break;
+            }
+        }
+
+        if (btn != null)
+        {
+            btn.SetActive(true);
+            Debug.Log("✅ GlobalButtonMenu found and activated.");
         }
         else
         {
-            Debug.LogWarning("❌ GlobalUICanvas not found.");
+            Debug.LogWarning("❌ GlobalButtonMenu could not be found in hierarchy.");
         }
     }
 }
