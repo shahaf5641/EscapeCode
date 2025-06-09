@@ -11,9 +11,7 @@ namespace Christina.CustomCursor
         [SerializeField] private Texture2D cursorTextureClickable;
         [SerializeField] private Vector2 clickPosition = Vector2.zero;
         [SerializeField] private LayerMask clickableLayers;
-
         private Texture2D currentCursor;
-
         void Update()
         {
             // ✅ Always allow hover for UI buttons

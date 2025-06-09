@@ -16,6 +16,18 @@ public class ExitManager : MonoBehaviour
 
     void Start()
     {
+        if (exitWindow == null && ExitCanvasManager.Instance != null)
+        {
+            // Try to find it under the global ExitCanvasManager
+            exitWindow = ExitCanvasManager.Instance.gameObject;
+        }
+
+        if (exitWindow == null)
+        {
+            Debug.LogError("❌ ExitWindow is not assigned and couldn't be found.");
+            return;
+        }
+
         exitWindow.SetActive(false);
         otherUIGroup.alpha = 1f;
 
@@ -23,6 +35,7 @@ public class ExitManager : MonoBehaviour
         yesButton.onClick.AddListener(ExitGame);
         noButton.onClick.AddListener(CloseExitPopup);
     }
+
 
     void OpenExitPopup()
     {

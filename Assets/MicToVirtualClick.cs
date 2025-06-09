@@ -23,7 +23,6 @@ public class MicToVirtualClick : MonoBehaviour
     private Coroutine micCheckRoutine;
     public Slider volumeBar;
     public RectTransform thresholdMarker;
-
     void Start()
     {
         // Volume bar setup

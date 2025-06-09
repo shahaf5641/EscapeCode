@@ -70,10 +70,13 @@ public class CodeWindowManager : MonoBehaviour
             if (currentSourceCollider != null)
                 currentSourceCollider.enabled = false;
         }
-
         PlayerController.IsMovementLocked = true;
         BigRobotController.IsMovementLocked = true;
-
+        problemTitleText.text = "";
+        problemDescText.text = "";
+        problemCodeText.text = "";
+        userInput.text = "";
+        resultOutput.text = "";
         if (FindFirstObjectByType<ChatGPTClient>().currentPuzzle.TryGetComponent(out PuzzleContextFormatter currentPuzzleFormatter))
         {
             if (lastPuzzleFormatter != currentPuzzleFormatter)
@@ -82,14 +85,12 @@ public class CodeWindowManager : MonoBehaviour
                 lastPuzzleFormatter = currentPuzzleFormatter;
             }
         }
-
         IsOpen = true;
-
         bool shouldStream = !streamedObjects.Contains(sourceObject);
         if (shouldStream) streamedObjects.Add(sourceObject);
-
         StartCoroutine(SetContentDelayed(problemTitle, problemDescription, problemCode, checkFunc, successCallback, shouldStream));
     }
+
 
 
     private IEnumerator TypeText(TextMeshProUGUI target, string fullText, float charDelay = 0.02f)
@@ -101,9 +102,6 @@ public class CodeWindowManager : MonoBehaviour
             yield return new WaitForSeconds(charDelay);
         }
     }
-
-
-
     private IEnumerator SetContentDelayed(string problemTitle, string problemDescription, string problemCode, Func<string, bool> checkFunc, Action successCallback, bool stream)
     {
         yield return null;
@@ -127,10 +125,6 @@ public class CodeWindowManager : MonoBehaviour
         onSolved = successCallback;
         solved = false;
     }
-
-
-
-
     public void Submit()
     {
         if (solved || solveCheck == null) return;
@@ -171,7 +165,6 @@ public class CodeWindowManager : MonoBehaviour
 
         currentSourceObject = null;
     }
-
 
     public void EnableCodeMode() => switcher2.isOnNullable = true;
 
