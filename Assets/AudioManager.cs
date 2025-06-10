@@ -10,16 +10,25 @@ public class AudioManager : MonoBehaviour
     public Slider musicSlider;
     public Slider sfxSlider;
     public Slider assistantSlider;
-
     [Header("Audio Sources")]
     public AudioSource musicSource;
     public List<AudioSource> sfxSources = new();
     public AudioSource assistantSource;
-
+    public static AudioManager Instance;
     private Dictionary<AudioChannel, float> volumes = new();
-
     void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject); // Avoid duplicates across scenes
+            return;
+        }
+
         // Apply saved volumes before anything else plays audio
         ApplyInitialVolume(AudioChannel.Music, "volume_music", musicSource);
         ApplyInitialVolume(AudioChannel.SFX, "volume_sfx", sfxSources);
@@ -84,4 +93,30 @@ public class AudioManager : MonoBehaviour
     {
         return volumes.TryGetValue(channel, out float val) ? val : 1f;
     }
+    public void RegisterExternalSource(AudioChannel channel, AudioSource source)
+    {
+        if (source == null) return;
+
+        switch (channel)
+        {
+            case AudioChannel.SFX:
+                if (!sfxSources.Contains(source))
+                {
+                    sfxSources.Add(source);
+                    source.volume = GetVolume(AudioChannel.SFX);
+                }
+                break;
+
+            case AudioChannel.Assistant:
+                assistantSource = source;
+                source.volume = GetVolume(AudioChannel.Assistant);
+                break;
+
+            case AudioChannel.Music:
+                musicSource = source;
+                source.volume = GetVolume(AudioChannel.Music);
+                break;
+        }
+    }
+
 }

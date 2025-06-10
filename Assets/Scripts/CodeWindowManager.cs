@@ -76,7 +76,6 @@ public class CodeWindowManager : MonoBehaviour
         problemDescText.text = "";
         problemCodeText.text = "";
         userInput.text = "";
-        resultOutput.text = "";
         if (FindFirstObjectByType<ChatGPTClient>().currentPuzzle.TryGetComponent(out PuzzleContextFormatter currentPuzzleFormatter))
         {
             if (lastPuzzleFormatter != currentPuzzleFormatter)

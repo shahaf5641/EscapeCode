@@ -53,8 +53,13 @@ namespace Christina.CustomCursor
 
         private bool IsPointerOverClickableUI()
         {
-            PointerEventData pointerData = new PointerEventData(EventSystem.current);
-            pointerData.position = Input.mousePosition;
+            if (EventSystem.current == null)
+                return false; // Fail gracefully if EventSystem is missing
+
+            PointerEventData pointerData = new PointerEventData(EventSystem.current)
+            {
+                position = Input.mousePosition
+            };
 
             List<RaycastResult> results = new List<RaycastResult>();
             EventSystem.current.RaycastAll(pointerData, results);
@@ -66,7 +71,6 @@ namespace Christina.CustomCursor
                     return true;
                 }
             }
-
             return false;
         }
     }
