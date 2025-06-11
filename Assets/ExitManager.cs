@@ -2,29 +2,42 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Linq;
 
 public class ExitManager : MonoBehaviour
 {
-    public GameObject exitWindow;         // Regular Canvas for the popup panel containing YES and NO buttons
-    public Button exitButton;             // The Exit button
-    public Button yesButton;              // YES button
-    public Button noButton;               // NO button
+    public GameObject exitWindow;
+    public Button exitButton;
+    public Button yesButton;
+    public Button noButton;
+    public CanvasGroup otherUIGroup;
 
-    public CanvasGroup otherUIGroup;      // Group for the rest of the UI (to disable interaction)
-    public float fadeDuration = 0.25f;    // Duration for fade in/out
-    public float fadeTargetAlpha = 0.35f;  // Target alpha for partial fade
+    public float fadeDuration = 0.25f;
+    public float fadeTargetAlpha = 0.35f;
 
     void Start()
     {
-        if (exitWindow == null && ExitCanvasManager.Instance != null)
+        if (exitWindow == null)
+            exitWindow = FindInactiveGameObjectByName("Exit_Canvas");
+
+        if (exitButton == null)
+            exitButton = FindInactiveButtonByName("Exit_Button");
+
+        if (yesButton == null)
+            yesButton = FindInactiveButtonByName("Yes_Button");
+
+        if (noButton == null)
+            noButton = FindInactiveButtonByName("No_Button");
+
+        if (otherUIGroup == null)
         {
-            // Try to find it under the global ExitCanvasManager
-            exitWindow = ExitCanvasManager.Instance.gameObject;
+            GameObject found = FindInactiveGameObjectByName("Main_Buttons");
+            if (found != null) otherUIGroup = found.GetComponent<CanvasGroup>();
         }
 
-        if (exitWindow == null)
+        if (exitWindow == null || exitButton == null || yesButton == null || noButton == null || otherUIGroup == null)
         {
-            Debug.LogError("❌ ExitWindow is not assigned and couldn't be found.");
+            Debug.LogError("❌ One or more UI references are missing.");
             return;
         }
 
@@ -36,6 +49,15 @@ public class ExitManager : MonoBehaviour
         noButton.onClick.AddListener(CloseExitPopup);
     }
 
+    GameObject FindInactiveGameObjectByName(string name)
+    {
+        return Resources.FindObjectsOfTypeAll<GameObject>().FirstOrDefault(go => go.name == name);
+    }
+
+    Button FindInactiveButtonByName(string name)
+    {
+        return Resources.FindObjectsOfTypeAll<Button>().FirstOrDefault(b => b.name == name);
+    }
 
     void OpenExitPopup()
     {

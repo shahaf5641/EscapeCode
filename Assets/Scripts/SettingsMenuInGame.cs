@@ -1,13 +1,13 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
+using System.Collections.Generic;
 
 public class SettingsMenuInGame : MonoBehaviour
 {
     public GameObject settingsPanel;
     public GameObject settingsButton;
 
-    private Collider[] cachedColliders;
+    private List<Collider> collidersTemporarilyDisabled = new();
 
     public void ToggleSettings()
     {
@@ -49,22 +49,27 @@ public class SettingsMenuInGame : MonoBehaviour
 
     private void DisableAllWorldColliders()
     {
-        cachedColliders = GameObject.FindObjectsOfType<Collider>();
-        foreach (var col in cachedColliders)
+        collidersTemporarilyDisabled.Clear();
+
+        Collider[] allColliders = GameObject.FindObjectsOfType<Collider>();
+        foreach (var col in allColliders)
         {
             if (col.enabled && col.gameObject.CompareTag("WorldClickable"))
+            {
                 col.enabled = false;
+                collidersTemporarilyDisabled.Add(col);
+            }
         }
     }
 
     private void EnableAllWorldColliders()
     {
-        if (cachedColliders == null) return;
-
-        foreach (var col in cachedColliders)
+        foreach (var col in collidersTemporarilyDisabled)
         {
-            if (col != null && col.gameObject.CompareTag("WorldClickable"))
+            if (col != null)
                 col.enabled = true;
         }
+
+        collidersTemporarilyDisabled.Clear();
     }
 }

@@ -2,40 +2,40 @@ using UnityEngine;
 
 public class CanvasSwitcher : MonoBehaviour
 {
-    [Header("Canvas Names")]
-    public string[] canvasNamesToDisable;
-    public string[] canvasNamesToEnable;
+    [Header("Canvas References (Optional)")]
+    [SerializeField] private GameObject canvasToDisable;
+    [SerializeField] private GameObject canvasToEnable;
 
-    private GameObject[] canvasesToDisable;
-    private GameObject[] canvasesToEnable;
+    [Header("Canvas Names (Used If References Are Missing)")]
+    [SerializeField] private string canvasNameToDisable;
+    [SerializeField] private string canvasNameToEnable;
 
     public void Switch()
     {
-        AssignCanvasesDynamically();
-
-        foreach (GameObject go in canvasesToDisable)
+        if (canvasToDisable == null && !string.IsNullOrEmpty(canvasNameToDisable))
         {
-            if (go != null) go.SetActive(false);
+            canvasToDisable = FindObjectAnywhere(canvasNameToDisable);
         }
 
-        foreach (GameObject go in canvasesToEnable)
+        if (canvasToEnable == null && !string.IsNullOrEmpty(canvasNameToEnable))
         {
-            if (go != null) go.SetActive(true);
+            canvasToEnable = FindObjectAnywhere(canvasNameToEnable);
         }
+
+        if (canvasToDisable != null)
+            canvasToDisable.SetActive(false);
+
+        if (canvasToEnable != null)
+            canvasToEnable.SetActive(true);
     }
-
-    private void AssignCanvasesDynamically()
+    private GameObject FindObjectAnywhere(string name)
     {
-        canvasesToDisable = new GameObject[canvasNamesToDisable.Length];
-        for (int i = 0; i < canvasNamesToDisable.Length; i++)
+        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+        foreach (GameObject obj in allObjects)
         {
-            canvasesToDisable[i] = GameObject.Find(canvasNamesToDisable[i]);
+            if (obj.name == name)
+                return obj;
         }
-
-        canvasesToEnable = new GameObject[canvasNamesToEnable.Length];
-        for (int i = 0; i < canvasNamesToEnable.Length; i++)
-        {
-            canvasesToEnable[i] = GameObject.Find(canvasNamesToEnable[i]);
-        }
+        return null;
     }
 }
