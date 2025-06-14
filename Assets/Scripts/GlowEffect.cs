@@ -10,6 +10,8 @@ public class GlowEffect : MonoBehaviour
 
     private bool hasInteracted = false;
     private Coroutine glowRoutine;
+    private float elapsedTime = 0f;
+    private bool isPaused = false;
 
     void Awake()
     {
@@ -19,7 +21,7 @@ public class GlowEffect : MonoBehaviour
 
     void Start()
     {
-        if (startOnAwake)
+        if (startOnAwake && HintGlowManager.Instance?.HintsEnabled == true)
             StartGlow();
     }
 
@@ -34,13 +36,13 @@ public class GlowEffect : MonoBehaviour
         if (glowRoutine != null)
             StopCoroutine(glowRoutine);
 
+        isPaused = false;
         glowRoutine = StartCoroutine(GlowAfterDelay());
     }
 
     public void MarkInteracted()
     {
         hasInteracted = true;
-
         if (glowRoutine != null)
             StopCoroutine(glowRoutine);
 
@@ -50,16 +52,50 @@ public class GlowEffect : MonoBehaviour
 
     IEnumerator GlowAfterDelay()
     {
-        yield return new WaitForSeconds(delayBeforeGlow);
+        while (elapsedTime < delayBeforeGlow)
+        {
+            if (!isPaused)
+                elapsedTime += Time.deltaTime;
+
+            yield return null;
+        }
 
         if (!hasInteracted && glowPrefab != null)
             glowPrefab.SetActive(true);
     }
 
-    // Optional if you want to re-allow glow later
+    public void OnHintStateChanged(bool hintsOn)
+    {
+        if (!gameObject.activeInHierarchy)
+        {
+            // Skip coroutine on inactive objects
+            return;
+        }
+
+        isPaused = !hintsOn;
+
+        if (hintsOn)
+        {
+            if (glowRoutine == null && !hasInteracted)
+                glowRoutine = StartCoroutine(GlowAfterDelay());
+        }
+        else
+        {
+            if (glowPrefab != null)
+                glowPrefab.SetActive(false);
+        }
+    }
+
+
     public void ResetInteraction()
     {
         hasInteracted = false;
+        elapsedTime = 0f;
+        isPaused = false;
+
+        if (glowRoutine != null)
+            StopCoroutine(glowRoutine);
+
         if (glowPrefab != null)
             glowPrefab.SetActive(false);
     }
