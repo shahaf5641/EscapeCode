@@ -2,9 +2,15 @@ using MediaPipe.Holistic;
 using System.Collections.Generic;
 using UnitEye;
 using UnityEngine;
+using System.Runtime.InteropServices;
+
+
+
 
 public class Gaze : MonoBehaviour
 {
+    [DllImport("user32.dll")]
+    static extern bool SetCursorPos(int X, int Y);
     const int IMG_SIZE = 128;
     const int CROSSHAIR_SIZE = 80;
 
@@ -222,7 +228,7 @@ public class Gaze : MonoBehaviour
         //Apply filtering
         Vector2 unfilteredGaze = gazeLocation;
         gazeLocation = SmoothGazeLocation(gazeLocation, _filtering);
-
+        SetCursorPos((int)gazeLocation.x, (int)gazeLocation.y);
         //Update last gaze location timestamp
         var now = System.DateTime.Now;
         LastGazeLocationTimeUnix = ((System.DateTimeOffset)now).ToUnixTimeMilliseconds();

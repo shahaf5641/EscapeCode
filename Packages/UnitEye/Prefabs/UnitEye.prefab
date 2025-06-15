@@ -13,13 +13,14 @@ GameObject:
   - component: {fileID: 3128903029877491936}
   - component: {fileID: 3128903029877491944}
   - component: {fileID: 3128903029877491945}
+  - component: {fileID: 6545883948691095405}
   m_Layer: 0
   m_Name: UnitEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8148365448440035643
 Transform:
   m_ObjectHideFlags: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 896eb57cbfb900e4fbba99cb025b6f16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  webCamName: GENERAL WEBCAM
+  webCamName: USB2.0 FHD UVC WebCam
   webCamResolution: {x: 1920, y: 1080}
   staticInput: {fileID: 0}
   rawImage: {fileID: 0}
@@ -62,7 +63,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3485875271603776584}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 05df763e3ac34b245986eeaddf61cb1f, type: 3}
   m_Name: 
@@ -121,3 +122,15 @@ MonoBehaviour:
   useDefaultFolder: 1
   timeUntilWrite: 10
   logsPerSecond: 999
+--- !u!114 &6545883948691095405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3485875271603776584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab42c46a777a1fe43938c9773ee58fa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
