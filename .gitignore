@@ -74,3 +74,4 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 /Assets/Resources/openai_config.json
+/Assets/StreamingAssets/Secrets/openai_config.json
