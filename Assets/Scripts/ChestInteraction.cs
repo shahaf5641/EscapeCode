@@ -49,17 +49,26 @@ if has_key_code:
         if (chestOpened) return;
         successSound.PlayOneShot(successSound.clip);
         chestOpened = true;
-        gameObject.GetComponent<BoxCollider>().enabled = false;
         keyObject.GetComponent<GlowEffect>().StartGlow();
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Chest solved!");
         gameObject.tag = "Untagged";
         gameObject.layer = LayerMask.NameToLayer("Default");
+        StartCoroutine(DisableColliderAfterDelay(0.5f));
         if (chestAnimator != null)
         {
             chestAnimator.SetTrigger("Open");
             StartCoroutine(RevealKeyAfterDelay(1));
         }
     }
+    IEnumerator DisableColliderAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        Collider col = GetComponent<Collider>();
+        if (col != null)
+            col.enabled = false;
+    }
+
     private IEnumerator RevealKeyAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);

@@ -54,15 +54,21 @@ for status in servers_status:
         passwordPanel.GetComponent<GlowEffect>().StartGlow();
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Message sent!");
         var collider = passwordPanel.GetComponent<BoxCollider>();
-        var thisCollider = GetComponent<BoxCollider>();
-        if (thisCollider != null)
-            thisCollider.enabled = false;
+        StartCoroutine(DisableColliderAfterDelay(0.5f));
         if (collider != null)
             collider.enabled = true;
         sphereRobotCam.Priority = 20; 
         playerCam.Priority = 10; 
         StartCameraAndAnimationSequence();
 
+    }
+    IEnumerator DisableColliderAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        Collider col = GetComponent<Collider>();
+        if (col != null)
+            col.enabled = false;
     }
     public void StartCameraAndAnimationSequence()
     {

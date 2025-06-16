@@ -229,42 +229,44 @@ public class CodeWindowManager : MonoBehaviour
 
         return string.Join("\n", numbered);
     }
-    public bool RunPythonValidator(string problemId, string userInput)
+public bool RunPythonValidator(string problemId, string userInput)
+{
+    string pythonExePath = Path.Combine(Application.streamingAssetsPath, "Python", "python.exe"); // Or "python" if using system Python
+    string scriptPath = Path.Combine(Application.streamingAssetsPath, "Python", "validate_solution.py");
+
+    // Escape double quotes in user input
+    userInput = userInput.Replace("\"", "\\\"");
+
+    ProcessStartInfo psi = new ProcessStartInfo
     {
-        string pythonExePath = Path.Combine(Application.dataPath, "..", "Python", "python.exe");
-        string scriptPath = Path.Combine(Application.dataPath, "..", "Python", "validate_solution.py");
-        userInput = userInput.Replace("\"", "\\\""); // Escape for safety
+        FileName = pythonExePath, // use "python" if system-installed
+        Arguments = $"\"{scriptPath}\" {problemId} \"{userInput}\"",
+        RedirectStandardOutput = true,
+        RedirectStandardError = true,
+        UseShellExecute = false,
+        CreateNoWindow = true
+    };
 
-        ProcessStartInfo psi = new ProcessStartInfo
+    try
+    {
+        using (Process process = Process.Start(psi))
         {
-            FileName = pythonExePath,
-            Arguments = $"\"{scriptPath}\" {problemId} \"{userInput}\"",
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
+            string output = process.StandardOutput.ReadToEnd().Trim();
+            string error = process.StandardError.ReadToEnd();
+            process.WaitForExit();
 
-        try
-        {
-            using (Process process = Process.Start(psi))
-            {
-                string output = process.StandardOutput.ReadToEnd().Trim();
-                string error = process.StandardError.ReadToEnd();
-                process.WaitForExit();
+            if (!string.IsNullOrEmpty(error))
+                UnityEngine.Debug.LogError($"Python Error: {error}");
 
-                if (!string.IsNullOrEmpty(error))
-                    UnityEngine.Debug.LogError($"Python Error: {error}");
+            UnityEngine.Debug.Log($"Python Output: {output}");
 
-                UnityEngine.Debug.Log($"Python Output: {output}");
-
-                return output == "correct";
-            }
-        }
-        catch (Exception ex)
-        {
-            UnityEngine.Debug.LogError("Validation failed: " + ex.Message);
-            return false;
+            return output == "correct";
         }
     }
+    catch (Exception ex)
+    {
+        UnityEngine.Debug.LogError("Validation failed: " + ex.Message);
+        return false;
+    }
+}
 }

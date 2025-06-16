@@ -67,9 +67,17 @@ secret_code = ""________""";
 
         chestCam.Priority = 20;     // Focus on chest
         playerCam.Priority = 10;    // Keep player cam lower
-
+        StartCoroutine(DisableColliderAfterDelay(0.5f));
         StartCoroutine(WaitAndReturnCamera());
         StartCoroutine(DeactivateAfterDelay(3f));
+    }
+    IEnumerator DisableColliderAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        Collider col = GetComponent<Collider>();
+        if (col != null)
+            col.enabled = false;
     }
 
     private IEnumerator WaitAndReturnCamera()

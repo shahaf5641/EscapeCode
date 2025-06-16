@@ -83,7 +83,7 @@ if log == [110, 120, 230, 240, 450, 460, 670, 680]:
         bigRobot.GetComponent<BigRobotController>().enabled = true;
         bigRobot.GetComponent<NavMeshAgent>().enabled = true;
         bigRobot.GetComponent<NavMeshObstacle>().enabled = false;
-        bigRobot.GetComponent<BoxCollider>().enabled = false;
+        StartCoroutine(DisableRobotCollidersAfterDelay(0.5f));
 
         // GameObject player = GameObject.FindWithTag("Player");
         // if (player != null) player.SetActive(false);
@@ -92,7 +92,15 @@ if log == [110, 120, 230, 240, 450, 460, 670, 680]:
         bigRobot.GetComponent<NavMeshAgent>().SetDestination(robotTargetPoint.position);
         StartCoroutine(WaitForRobotArrival());
     }
+    private IEnumerator DisableRobotCollidersAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
 
+        foreach (var col in bigRobot.GetComponentsInChildren<Collider>(true))
+        {
+            col.enabled = false;
+        }
+    }
     private IEnumerator WaitForRobotArrival()
     {
         // 🔒 Lock robot input while we wait for it to arrive

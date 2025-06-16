@@ -64,9 +64,17 @@ else:
         successSound.PlayOneShot(successSound.clip);
         doorOpened = true;
         FindFirstObjectByType<FeedbackUIManager>().ShowMessage("Room solved!");
-        gameObject.GetComponent<BoxCollider>().enabled = false;
+        StartCoroutine(DisableColliderAfterDelay(0.5f));
         // ✅ Start the delay to load next scene
         StartCoroutine(LoadNextSceneAfterDelay());
+    }
+    IEnumerator DisableColliderAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        Collider col = GetComponent<Collider>();
+        if (col != null)
+            col.enabled = false;
     }
 
     private IEnumerator LoadNextSceneAfterDelay()

@@ -58,16 +58,22 @@ if password == 4312:
         isSolved = true;
         PlayerController.IsMovementLocked = true;
         bigRobot.GetComponent<GlowEffect>().StartGlow();
-        var thisCollider = GetComponent<BoxCollider>();
-        if (thisCollider != null)
-            thisCollider.enabled = false;
+        StartCoroutine(DisableColliderAfterDelay(0.5f));
         if (successSound != null && successSound.clip != null)
             successSound.PlayOneShot(successSound.clip);
         FindFirstObjectByType<FeedbackUIManager>()?.ShowMessage("Robot Activated!");
         FindFirstObjectByType<RobotSphereController>()?.StartRollingToTarget();
         DeactivateAfterDelay(2f);
     }
-        private IEnumerator DeactivateAfterDelay(float delay)
+    IEnumerator DisableColliderAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        Collider col = GetComponent<Collider>();
+        if (col != null)
+            col.enabled = false;
+    }
+    private IEnumerator DeactivateAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         PlayerController.IsMovementLocked = false;

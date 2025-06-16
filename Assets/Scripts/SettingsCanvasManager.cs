@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class SettingsCanvasManager : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class SettingsCanvasManager : MonoBehaviour
     [SerializeField] private GameObject globalButtonMenu;
     [SerializeField] private GameObject globalPanelSettings;
 
-    private Collider[] cachedColliders;
+    private Dictionary<Collider, bool> colliderStates = new();
     private bool IsInRoomScene =>
         SceneManager.GetActiveScene().name == "FirstRoomScene" ||
         SceneManager.GetActiveScene().name == "SecondRoomScene";
@@ -30,11 +31,8 @@ public class SettingsCanvasManager : MonoBehaviour
     {
         if (!IsInRoomScene) return;
 
-        if (globalButtonMenu != null)
-            globalButtonMenu.SetActive(false);
-
-        if (globalPanelSettings != null)
-            globalPanelSettings.SetActive(false);
+        globalButtonMenu?.SetActive(false);
+        globalPanelSettings?.SetActive(false);
 
         DisableAllWorldColliders();
     }
@@ -43,33 +41,32 @@ public class SettingsCanvasManager : MonoBehaviour
     {
         if (!IsInRoomScene) return;
 
-        if (globalButtonMenu != null)
-            globalButtonMenu.SetActive(true);
+        globalButtonMenu?.SetActive(true);
+        globalPanelSettings?.SetActive(true);
 
-        if (globalPanelSettings != null)
-            globalPanelSettings.SetActive(true);
-
-        EnableAllWorldColliders();
+        RestoreOriginalColliderStates();
     }
 
     void DisableAllWorldColliders()
     {
-        cachedColliders = GameObject.FindObjectsOfType<Collider>();
-        foreach (var col in cachedColliders)
+        colliderStates.Clear();
+
+        foreach (var col in GameObject.FindObjectsOfType<Collider>())
         {
-            if (col.enabled && col.gameObject.CompareTag("WorldClickable"))
-                col.enabled = false;
+            if (col.gameObject.CompareTag("WorldClickable"))
+            {
+                colliderStates[col] = col.enabled;  // save current state
+                col.enabled = false;                // disable
+            }
         }
     }
 
-    void EnableAllWorldColliders()
+    void RestoreOriginalColliderStates()
     {
-        if (cachedColliders == null) return;
-
-        foreach (var col in cachedColliders)
+        foreach (var kvp in colliderStates)
         {
-            if (col != null && col.gameObject.CompareTag("WorldClickable"))
-                col.enabled = true;
+            if (kvp.Key != null)
+                kvp.Key.enabled = kvp.Value;  // restore previous state
         }
     }
 }
