@@ -8,6 +8,10 @@ public class SettingsCanvasManager : MonoBehaviour
 
     [SerializeField] private GameObject globalButtonMenu;
     [SerializeField] private GameObject globalPanelSettings;
+    [SerializeField] private GameObject calibrationCanvas;
+    [SerializeField] private GameObject settingsCanvas;
+    [SerializeField] private GazeCalibration scriptToEnable;
+
 
     private Dictionary<Collider, bool> colliderStates = new();
     private bool IsInRoomScene =>
@@ -68,5 +72,22 @@ public class SettingsCanvasManager : MonoBehaviour
             if (kvp.Key != null)
                 kvp.Key.enabled = kvp.Value;  // restore previous state
         }
+    }
+
+    public void CalibrationButtonHideSettingsCanvas()
+    {
+        if (calibrationCanvas != null)
+            calibrationCanvas.SetActive(!calibrationCanvas.activeSelf);
+
+        if (settingsCanvas != null)
+            settingsCanvas.SetActive(!settingsCanvas.activeSelf);
+
+        if (scriptToEnable != null)
+            scriptToEnable.enabled = !scriptToEnable.enabled;
+
+        if (globalButtonMenu != null)
+            globalButtonMenu.SetActive(!globalButtonMenu.activeSelf);
+        if (globalPanelSettings != null)
+            globalPanelSettings.SetActive(!globalPanelSettings.activeSelf);
     }
 }

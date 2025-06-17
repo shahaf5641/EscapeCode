@@ -278,8 +278,8 @@ public class Gaze : MonoBehaviour
             GUI.DrawTexture(new Rect(gazeLocation.x - CROSSHAIR_SIZE/2, gazeLocation.y - CROSSHAIR_SIZE/2, CROSSHAIR_SIZE, CROSSHAIR_SIZE), dot);
 
         //Gaze UI
-        if (showGazeUI && GUI.Button(new Rect(Screen.height * 0.05f, Screen.height - Screen.height * 0.1f, Screen.width * 0.1f, Screen.height * 0.05f), $"{(gazeUIActivated ? "Hide" : "Show")} Gaze UI"))
-            gazeUIActivated = !gazeUIActivated;
+        //if (showGazeUI && GUI.Button(new Rect(Screen.height * 0.05f, Screen.height - Screen.height * 0.1f, Screen.width * 0.1f, Screen.height * 0.05f), $"{(gazeUIActivated ? "Hide" : "Show")} Gaze UI"))
+            //gazeUIActivated = !gazeUIActivated;
 
         if (gazeUIActivated)
             gazeUI = GUI.Window(0, gazeUI, GazeUI, "");

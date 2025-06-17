@@ -15,6 +15,8 @@ public class EyeTrackingToggle : MonoBehaviour
     public TMP_Text micDropdownLabel;
     public TMP_Text camDropdownLabel;
     public GameObject volumeBarUI;
+    public GameObject micClickObject;
+    //public MouseHover HoverWithDelayObject;
 
     private bool isEnabled;
     private bool hasCamera;
@@ -37,12 +39,12 @@ public class EyeTrackingToggle : MonoBehaviour
         }
         else
         {
-            DisableAllControls(includeEyeToggle: false); // allow Eye Tracking only
+            DisableAllControls(includeEyeToggle: false); 
             buttonText.text = "  off";
             toggleButton.interactable = true;
 
             if (buttonText != null)
-                buttonText.color = Color.white; // ← ADD THIS LINE
+                buttonText.color = Color.white; 
 
             toggleButton.onClick.AddListener(ToggleEyeTracking);
         }
@@ -53,9 +55,12 @@ public class EyeTrackingToggle : MonoBehaviour
     {
         isEnabled = !isEnabled;
         eyeTrackingObject.SetActive(isEnabled);
+        Cursor.visible = !isEnabled;
+        if (micClickObject != null)
+            micClickObject.SetActive(isEnabled);
         PlayerPrefs.SetInt("EyeTrackingEnabled", isEnabled ? 1 : 0);
         PlayerPrefs.Save();
-
+ 
         UpdateButtonStates();
     }
 
@@ -130,3 +135,5 @@ public class EyeTrackingToggle : MonoBehaviour
         Debug.Log("🎙️ Mic Click is now " + (micClick.enabled ? "ON" : "OFF"));
     }
 }
+
+
