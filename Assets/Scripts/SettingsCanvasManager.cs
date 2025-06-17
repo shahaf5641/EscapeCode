@@ -85,9 +85,14 @@ public class SettingsCanvasManager : MonoBehaviour
         if (scriptToEnable != null)
             scriptToEnable.enabled = !scriptToEnable.enabled;
 
-        if (globalButtonMenu != null)
-            globalButtonMenu.SetActive(!globalButtonMenu.activeSelf);
-        if (globalPanelSettings != null)
-            globalPanelSettings.SetActive(!globalPanelSettings.activeSelf);
+        // Only toggle these if the scene is not MainMenuScene
+        if (SceneManager.GetActiveScene().name != "MainMenuScene")
+        {
+            if (globalButtonMenu != null)
+                globalButtonMenu.SetActive(!globalButtonMenu.activeSelf);
+
+            if (globalPanelSettings != null)
+                globalPanelSettings.SetActive(!globalPanelSettings.activeSelf);
+        }
     }
 }
