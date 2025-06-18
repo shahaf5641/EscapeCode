@@ -190,31 +190,33 @@ public class MicToVirtualClick : MonoBehaviour
         thresholdMarker.anchorMax = new Vector2(1, normalizedThreshold);
         thresholdMarker.anchoredPosition = Vector2.zero; // Reset offset
     }
-    float GetLoudness()
+public float GetLoudness()
+{
+    if (micClip == null || !Microphone.IsRecording(null)) return 0f;
+
+    const int sampleWindow = 128;
+    float[] samples = new float[sampleWindow];
+
+    int micPosition = Microphone.GetPosition(null) - sampleWindow;
+    if (micPosition < 0) return 0f;
+
+    try
     {
-        if (micClip == null || string.IsNullOrEmpty(micName)) return 0f;
-
-        int micPos = Microphone.GetPosition(micName);
-        if (micPos < sampleWindow) return 0f; // prevent negative index
-
-        int startPos = micPos - sampleWindow;
-        float[] samples = new float[sampleWindow];
-        
-        try
-        {
-            micClip.GetData(samples, startPos);
-        }
-        catch
-        {
-            return 0f; // fail safe
-        }
-
-        float sum = 0f;
-        foreach (float sample in samples)
-            sum += sample * sample;
-
-        return Mathf.Sqrt(sum / sampleWindow);
+        micClip.GetData(samples, micPosition);
     }
+    catch
+    {
+        return 0f; // Prevent crash from GetData
+    }
+
+    float sum = 0f;
+    for (int i = 0; i < sampleWindow; i++)
+    {
+        sum += samples[i] * samples[i];
+    }
+    return Mathf.Sqrt(sum / sampleWindow);
+}
+
 
 
 
