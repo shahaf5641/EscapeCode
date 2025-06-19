@@ -81,6 +81,22 @@ public class MLP
         //Return accuracy message
         return $"MLP Training done. RMSE X: {errorXInCm}cm | RMSE Y: {errorYInCm}cm.";
     }
+    void Start()
+    {
+        var mlp = new MLP();
+
+        // Example dummy calibration data (you must use real features & gaze points!)
+        float[][] fakeInput = new float[5][] {
+            new float[] {0.1f, 0.2f}, new float[] {0.2f, 0.3f}, new float[] {0.4f, 0.6f}, new float[] {0.7f, 0.8f}, new float[] {0.9f, 1.0f}
+        };
+        Vector2[] fakeTarget = new Vector2[5] {
+            new Vector2(10, 10), new Vector2(20, 20), new Vector2(30, 30), new Vector2(40, 40), new Vector2(50, 50)
+        };
+
+        Debug.Log(mlp.Train(fakeInput, fakeTarget));
+        mlp.Save("defaultUser.mlp");
+    }
+
 
     /// <summary>
     /// Saves MLP to json file.
@@ -102,34 +118,70 @@ public class MLP
     /// Loads MLP from json file, uses default if no custom calibration is found.
     /// </summary>
     /// <param name="fileName">Filename</param>
-    public static MLP Load(string fileName)
+public static MLP Load(string fileName)
+{
+    var mlp = new MLP();
+
+    // Construct the file path
+    string user = PlayerPrefs.GetString("CalibrationUser", "defaultUser");
+    string filename = user + ".mlp";
+    string filepath = Path.Combine(Application.streamingAssetsPath, "Calibration Files", "MLP", filename);
+
+    Debug.Log("🔍 Trying to load MLP file from path: " + filepath);
+
+    string jsonString = null;
+
+    mlp._lap = BrightWireProvider.CreateLinearAlgebra(false);
+    mlp._graph = new GraphFactory(mlp._lap);
+
+    // Check if file exists
+    if (File.Exists(filepath))
     {
-        var mlp = new MLP();
-
-        string filepath = Application.streamingAssetsPath + $"/Calibration Files/MLP/{fileName}";
-        string jsonString;
-
-        mlp._lap = BrightWireProvider.CreateLinearAlgebra(false);
-        mlp._graph = new GraphFactory(mlp._lap);
-        
+        Debug.Log("✅ MLP file found. Reading...");
         try
         {
             jsonString = File.ReadAllText(filepath);
-        } 
-        catch
+        }
+        catch (System.Exception ex)
         {
-            //Default file fallback
-            Debug.LogWarning("Calibrated MLP file not found, using default file! Please run a MLCalibration!");
+            Debug.LogError("❌ Failed to read MLP file: " + ex.Message);
+        }
+    }
+    else
+    {
+        Debug.LogWarning("⚠️ MLP file NOT found. Falling back to default calibration.");
+        try
+        {
             var calibrations = Resources.Load<CalibrationResource>("CalibrationDefaultFiles");
+            if (calibrations == null || calibrations.mlpAsset == null)
+            {
+                Debug.LogError("❌ Default CalibrationDefaultFiles not found in Resources.");
+                throw new FileNotFoundException("Default calibration file missing from Resources.");
+            }
             jsonString = calibrations.mlpAsset.ToString();
         }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("❌ Failed to load default calibration: " + ex.Message);
+            throw;
+        }
+    }
 
-        //Create graph execution engine
+    try
+    {
         mlp._graphModel = JsonConvert.DeserializeObject<GraphModel>(jsonString);
         mlp._executionEngine = mlp._graph.CreateEngine(mlp._graphModel.Graph);
-
-        return mlp;
+        Debug.Log("✅ MLP successfully deserialized and engine created.");
     }
+    catch (System.Exception ex)
+    {
+        Debug.LogError("❌ Failed to deserialize MLP JSON or create engine: " + ex.Message);
+        throw;
+    }
+
+    return mlp;
+}
+
 
     private (float Min, float Max) CalculateMinMax(Vector<float> vector)
     {

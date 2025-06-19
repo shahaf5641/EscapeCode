@@ -24,7 +24,21 @@ public class VoiceCommandManager : MonoBehaviour
     private bool wasMicClickOnBeforeRecording = false;
     private AudioClip micMonitorClip;
     private string lastUsedMic;
-
+    void Awake()
+    {
+        if (micClick == null)
+        {
+            micClick = FindObjectOfType<MicToVirtualClick>();
+            if (micClick == null)
+            {
+                Debug.LogError("❌ MicToVirtualClick not found in scene!");
+            }
+            else
+            {
+                Debug.Log("✅ MicToVirtualClick assigned dynamically.");
+            }
+        }
+    }
     public void ToggleRecording()
     {
         if (!isRecording)
@@ -36,7 +50,6 @@ public class VoiceCommandManager : MonoBehaviour
             StopVoiceCommand();
         }
     }
-
     public void StartVoiceCommand()
     {
         if (micClick != null)
@@ -56,7 +69,6 @@ public class VoiceCommandManager : MonoBehaviour
             StopCoroutine(silenceMonitorRoutine);
         silenceMonitorRoutine = StartCoroutine(MonitorSilence());
     }
-
     public void StopVoiceCommand()
     {
         if (isCoolingDown || !isRecording) return;
@@ -104,7 +116,6 @@ public class VoiceCommandManager : MonoBehaviour
             HandleTranscribedInput(input);
         }));
     }
-
     private IEnumerator MonitorSilence()
     {
         float[] samples = new float[128];
@@ -141,7 +152,6 @@ public class VoiceCommandManager : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
     }
-
     private void HandleTranscribedInput(string input)
     {
         if (IsHintRequested(input))

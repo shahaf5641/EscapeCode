@@ -39,12 +39,12 @@ public class EyeTrackingToggle : MonoBehaviour
         }
         else
         {
-            DisableAllControls(includeEyeToggle: false); 
+            DisableAllControls(includeEyeToggle: false);
             buttonText.text = "  off";
             toggleButton.interactable = true;
 
             if (buttonText != null)
-                buttonText.color = Color.white; 
+                buttonText.color = Color.white;
 
             toggleButton.onClick.AddListener(ToggleEyeTracking);
         }
@@ -60,7 +60,7 @@ public class EyeTrackingToggle : MonoBehaviour
             micClickObject.SetActive(isEnabled);
         PlayerPrefs.SetInt("EyeTrackingEnabled", isEnabled ? 1 : 0);
         PlayerPrefs.Save();
- 
+
         UpdateButtonStates();
     }
 
@@ -134,6 +134,33 @@ public class EyeTrackingToggle : MonoBehaviour
 
         Debug.Log("🎙️ Mic Click is now " + (micClick.enabled ? "ON" : "OFF"));
     }
+    public void RunCalibration()
+    {
+        MLP mlp = new MLP();
+
+        // Replace with real calibration data collection in your game
+        float[][] inputFeatures = new float[][]
+        {
+            new float[] { 0.1f, 0.2f },
+            new float[] { 0.4f, 0.5f },
+            new float[] { 0.7f, 0.8f }
+        };
+
+        Vector2[] targetGazePoints = new Vector2[]
+        {
+            new Vector2(100, 200),
+            new Vector2(300, 400),
+            new Vector2(500, 600)
+        };
+
+
+        string result = mlp.Train(inputFeatures, targetGazePoints);
+        Debug.Log(result);
+
+        mlp.Save("defaultUser.mlp");
+        Debug.Log("✅ Calibration complete and saved to defaultUser.mlp");
+    }
+
 }
 
 
