@@ -24,6 +24,7 @@ public class VoiceCommandManager : MonoBehaviour
     private bool wasMicClickOnBeforeRecording = false;
     private AudioClip micMonitorClip;
     private string lastUsedMic;
+
     void Awake()
     {
         if (micClick == null)
@@ -39,6 +40,7 @@ public class VoiceCommandManager : MonoBehaviour
             }
         }
     }
+
     public void ToggleRecording()
     {
         if (!isRecording)
@@ -50,25 +52,39 @@ public class VoiceCommandManager : MonoBehaviour
             StopVoiceCommand();
         }
     }
+
     public void StartVoiceCommand()
     {
         if (micClick != null)
         {
             wasMicClickOnBeforeRecording = micClick.enabled;
+            micClick.StopMicrophone();
             micClick.enabled = false;
         }
+
+        string micName = micClick != null ? micClick.GetSelectedMicName() : Microphone.devices.FirstOrDefault();
+        lastUsedMic = micName;
+
+        StartCoroutine(RecordWithDelay(micName));
+    }
+
+    private IEnumerator RecordWithDelay(string micName)
+    {
+        Microphone.End(null);
+        yield return new WaitForSeconds(0.1f);
 
         recorder.StartRecording();
         isRecording = true;
         recordToggleLabel.text = "Stop";
 
-        lastUsedMic = Microphone.devices.FirstOrDefault();
-        micMonitorClip = Microphone.Start(lastUsedMic, true, 1, 44100);
+        micMonitorClip = Microphone.Start(micName, true, 1, 44100);
         lastLoudTime = Time.time;
+
         if (silenceMonitorRoutine != null)
             StopCoroutine(silenceMonitorRoutine);
         silenceMonitorRoutine = StartCoroutine(MonitorSilence());
     }
+
     public void StopVoiceCommand()
     {
         if (isCoolingDown || !isRecording) return;
@@ -92,15 +108,19 @@ public class VoiceCommandManager : MonoBehaviour
 
         recorder.StopRecordingAndSave();
 
-        StartCoroutine(transcriber.TranscribeAudio(recorder.GetSavedFilePath(), (text) =>
+        StartCoroutine(FinalizeVoiceCommand());
+    }
+
+    private IEnumerator FinalizeVoiceCommand()
+    {
+        yield return new WaitForSeconds(0.1f);
+
+        yield return StartCoroutine(transcriber.TranscribeAudio(recorder.GetSavedFilePath(), (text) =>
         {
-            if (micClick != null)
+            if (micClick != null && wasMicClickOnBeforeRecording)
             {
-                micClick.enabled = wasMicClickOnBeforeRecording;
-                if (micClick.enabled)
-                {
-                    micClick.ActivateMic(); // Reactivate listening logic
-                }
+                micClick.enabled = true;
+                micClick.ActivateMic();
             }
 
             string input = text.ToLower();
@@ -116,6 +136,7 @@ public class VoiceCommandManager : MonoBehaviour
             HandleTranscribedInput(input);
         }));
     }
+
     private IEnumerator MonitorSilence()
     {
         float[] samples = new float[128];
@@ -135,7 +156,10 @@ public class VoiceCommandManager : MonoBehaviour
                 continue;
             }
 
-            micMonitorClip.GetData(samples, micPos - samples.Length);
+            bool gotData = false;
+            try { micMonitorClip.GetData(samples, micPos - samples.Length); gotData = true; } catch { }
+            if (!gotData) yield return new WaitForSeconds(0.1f);
+
             float sum = samples.Sum(sample => sample * sample);
             float volume = Mathf.Sqrt(sum / samples.Length);
 
@@ -152,6 +176,7 @@ public class VoiceCommandManager : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
     }
+
     private void HandleTranscribedInput(string input)
     {
         if (IsHintRequested(input))

@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.IO;
 using TMPro;
+using System.Linq;
+using System.Collections;
 
 public class VoiceRecorder : MonoBehaviour
 {
@@ -8,6 +10,7 @@ public class VoiceRecorder : MonoBehaviour
     private AudioClip recordedClip;
     private bool isRecording = false;
     private string filePath;
+    private string currentMic;
 
     private TMP_Dropdown micDropdown;
 
@@ -30,33 +33,50 @@ public class VoiceRecorder : MonoBehaviour
             return;
         }
 
-        string selectedMic = null;
-
         if (micDropdown != null && micDropdown.options.Count > 0)
         {
-            selectedMic = micDropdown.options[micDropdown.value].text;
+            currentMic = micDropdown.options[micDropdown.value].text;
         }
         else
         {
-            selectedMic = Microphone.devices[0];
-            Debug.LogWarning("🎤 Microphone dropdown missing or empty. Falling back to default mic: " + selectedMic);
+            currentMic = Microphone.devices[0];
+            Debug.LogWarning("🎤 Microphone dropdown missing or empty. Falling back to default mic: " + currentMic);
         }
 
-        recordedClip = Microphone.Start(selectedMic, false, 10, 44100);
+        Debug.Log("🎤 Selected device: " + currentMic);
+        Debug.Log("📦 Available devices: " + string.Join(", ", Microphone.devices));
+
+        StartCoroutine(ResetAndRecord(currentMic));
+    }
+
+    private IEnumerator ResetAndRecord(string micName)
+    {
+        Microphone.End(null);
+        yield return new WaitForSeconds(0.1f);
+        recordedClip = Microphone.Start(micName, false, 10, 44100);
         isRecording = true;
-        Debug.Log("🎬 Recording started using: " + selectedMic);
+        Debug.Log("🎬 Recording started using: " + micName);
     }
 
     public void StopRecordingAndSave()
     {
         if (!isRecording) return;
 
-        Microphone.End(null);
+        Microphone.End(currentMic);
         isRecording = false;
 
         if (recordedClip == null)
         {
             Debug.LogError("❌ Recorded clip is null!");
+            return;
+        }
+
+        float[] samples = new float[recordedClip.samples * recordedClip.channels];
+        recordedClip.GetData(samples, 0);
+
+        if (samples.All(s => Mathf.Approximately(s, 0)))
+        {
+            Debug.LogError("❌ Recording has only silence!");
             return;
         }
 

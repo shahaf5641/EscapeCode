@@ -23,6 +23,7 @@ public class MicToVirtualClick : MonoBehaviour
     private Coroutine micCheckRoutine;
     public Slider volumeBar;
     public RectTransform thresholdMarker;
+    
     void Start()
     {
         // Volume bar setup
@@ -62,9 +63,18 @@ public class MicToVirtualClick : MonoBehaviour
                 micDropdown.value = index;
                 micDropdown.RefreshShownValue();
             }
+            else
+            {
+                // Set to first device if no saved mic or saved mic not found
+                micName = GetSelectedMicName();
+            }
+        }
+        else
+        {
+            // If dropdown is null, use devices[0]
+            micName = GetSelectedMicName();
         }
     }
-
 
     public void ActivateMic()
     {
@@ -74,13 +84,7 @@ public class MicToVirtualClick : MonoBehaviour
             return;
         }
 
-        if (micDropdown == null || micDropdown.options.Count == 0)
-        {
-            Debug.LogError("❌ Microphone dropdown is empty or unassigned.");
-            return;
-        }
-
-        string selectedMic = GetCurrentDropdownMic();
+        string selectedMic = GetSelectedMicName();
         StopMic();
         StartMic(selectedMic);
     }
@@ -105,6 +109,41 @@ public class MicToVirtualClick : MonoBehaviour
         micDropdown.AddOptions(micList);
         micDropdown.RefreshShownValue();
     }
+    
+    public string GetSelectedMicName()
+    {
+        // If micDropdown is null, use devices[0]
+        if (micDropdown == null)
+        {
+            return Microphone.devices.Length > 0 ? Microphone.devices[0] : null;
+        }
+        
+        // If micDropdown is not null, use the dropdown value
+        if (micDropdown.options.Count > 0)
+        {
+            return micDropdown.options[micDropdown.value].text;
+        }
+        
+        // Fallback to devices[0]
+        return Microphone.devices.Length > 0 ? Microphone.devices[0] : null;
+    }
+
+    public void StopMicrophone()
+    {
+        if (!string.IsNullOrEmpty(micName) && Microphone.IsRecording(micName))
+        {
+            Microphone.End(micName);
+            Debug.Log("🎤 Stopped microphone from MicToVirtualClick.");
+        }
+
+        if (micCheckRoutine != null)
+        {
+            StopCoroutine(micCheckRoutine);
+            micCheckRoutine = null;
+        }
+
+        micClip = null;
+    }
 
     void OnMicDropdownChanged(int index)
     {
@@ -112,18 +151,12 @@ public class MicToVirtualClick : MonoBehaviour
         PlayerPrefs.SetString("selected_mic", newMic);
         PlayerPrefs.Save();
 
+        // Update micName immediately when dropdown changes
+        micName = newMic;
+        
         StopMic();
         StartMic(newMic);
     }
-
-    string GetCurrentDropdownMic()
-    {
-        if (micDropdown == null || micDropdown.options.Count == 0)
-            return null;
-
-        return micDropdown.options[micDropdown.value].text;
-    }
-
     void StartMic(string newMic)
     {
         if (string.IsNullOrEmpty(newMic) || !Microphone.devices.Contains(newMic))
@@ -153,6 +186,7 @@ public class MicToVirtualClick : MonoBehaviour
 
         micClip = null;
     }
+    
     IEnumerator CheckMicVolume()
     {
         while (true)
@@ -177,6 +211,7 @@ public class MicToVirtualClick : MonoBehaviour
             yield return new WaitForSeconds(checkInterval);
         }
     }
+    
     void UpdateThresholdMarker()
     {
         if (thresholdMarker == null || volumeBar == null)
@@ -190,35 +225,34 @@ public class MicToVirtualClick : MonoBehaviour
         thresholdMarker.anchorMax = new Vector2(1, normalizedThreshold);
         thresholdMarker.anchoredPosition = Vector2.zero; // Reset offset
     }
-public float GetLoudness()
-{
-    if (micClip == null || !Microphone.IsRecording(null)) return 0f;
 
-    const int sampleWindow = 128;
-    float[] samples = new float[sampleWindow];
-
-    int micPosition = Microphone.GetPosition(null) - sampleWindow;
-    if (micPosition < 0) return 0f;
-
-    try
+    public float GetLoudness()
     {
-        micClip.GetData(samples, micPosition);
+        if (micClip == null || string.IsNullOrEmpty(micName) || !Microphone.IsRecording(micName)) 
+            return 0f;
+
+        const int sampleWindow = 128;
+        float[] samples = new float[sampleWindow];
+
+        int micPosition = Microphone.GetPosition(micName) - sampleWindow;
+        if (micPosition < 0) return 0f;
+
+        try
+        {
+            micClip.GetData(samples, micPosition);
+        }
+        catch
+        {
+            return 0f; // Prevent crash from GetData
+        }
+
+        float sum = 0f;
+        for (int i = 0; i < sampleWindow; i++)
+        {
+            sum += samples[i] * samples[i];
+        }
+        return Mathf.Sqrt(sum / sampleWindow);
     }
-    catch
-    {
-        return 0f; // Prevent crash from GetData
-    }
-
-    float sum = 0f;
-    for (int i = 0; i < sampleWindow; i++)
-    {
-        sum += samples[i] * samples[i];
-    }
-    return Mathf.Sqrt(sum / sampleWindow);
-}
-
-
-
 
     void TriggerVirtualClick()
     {
@@ -229,6 +263,7 @@ public float GetLoudness()
         mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, x, y, 0, 0);
         Debug.Log("🖱️ Real mouse click simulated at: " + pos);
     }
+    
     void UpdateThresholdFromSlider(float value)
     {
         loudnessThreshold = value;
