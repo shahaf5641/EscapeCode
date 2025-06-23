@@ -7,7 +7,7 @@ using System.Collections;
 public class VoiceRecorder : MonoBehaviour
 {
     public string fileName = "recordedAudio.wav";
-    private AudioClip recordedClip;
+    public AudioClip recordedClip;
     private bool isRecording = false;
     private string filePath;
     private string currentMic;
@@ -86,4 +86,14 @@ public class VoiceRecorder : MonoBehaviour
     }
 
     public string GetSavedFilePath() => filePath;
+    public AudioClip GetRecordedClip()
+    {
+        return recordedClip;
+    }
+
+    public bool IsRecording()
+    {
+        return isRecording;
+    }
+
 }

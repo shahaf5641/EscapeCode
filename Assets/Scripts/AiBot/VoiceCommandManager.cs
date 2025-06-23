@@ -13,18 +13,15 @@ public class VoiceCommandManager : MonoBehaviour
     public UnityEngine.UI.Button recordToggleButton;
     public TMPro.TextMeshProUGUI recordToggleLabel;
     [SerializeField] private AudioSource aiReplySound;
-
     private Coroutine silenceMonitorRoutine;
-    public float silenceThreshold = 0.05f;
+    public float silenceThreshold = 0.005f;
     public float silenceTimeout = 2f;
     private float lastLoudTime;
-
     private bool isRecording = false;
     private bool isCoolingDown = false;
     private bool wasMicClickOnBeforeRecording = false;
-    private AudioClip micMonitorClip;
     private string lastUsedMic;
-
+    
     void Awake()
     {
         if (micClick == null)
@@ -70,19 +67,20 @@ public class VoiceCommandManager : MonoBehaviour
 
     private IEnumerator RecordWithDelay(string micName)
     {
+        // Stop all microphone instances first
         Microphone.End(null);
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.2f);
 
+        // Start recording - let VoiceRecorder handle the microphone
         recorder.StartRecording();
         isRecording = true;
         recordToggleLabel.text = "Stop";
 
-        micMonitorClip = Microphone.Start(micName, true, 1, 44100);
         lastLoudTime = Time.time;
 
         if (silenceMonitorRoutine != null)
             StopCoroutine(silenceMonitorRoutine);
-        silenceMonitorRoutine = StartCoroutine(MonitorSilence());
+        silenceMonitorRoutine = StartCoroutine(MonitorSilenceFromRecorder());
     }
 
     public void StopVoiceCommand()
@@ -100,14 +98,7 @@ public class VoiceCommandManager : MonoBehaviour
             silenceMonitorRoutine = null;
         }
 
-        if (!string.IsNullOrEmpty(lastUsedMic))
-        {
-            Microphone.End(lastUsedMic);
-            micMonitorClip = null;
-        }
-
         recorder.StopRecordingAndSave();
-
         StartCoroutine(FinalizeVoiceCommand());
     }
 
@@ -137,45 +128,58 @@ public class VoiceCommandManager : MonoBehaviour
         }));
     }
 
-    private IEnumerator MonitorSilence()
+private IEnumerator MonitorSilenceFromRecorder()
+{
+    yield return new WaitForSeconds(0.5f);
+
+    const int sampleWindow = 1024;
+    float[] samples = new float[sampleWindow];
+    AudioClip micClip = recorder.GetRecordedClip();
+
+    if (micClip == null)
     {
-        float[] samples = new float[128];
-
-        while (true)
-        {
-            if (micMonitorClip == null || !Microphone.IsRecording(lastUsedMic))
-            {
-                yield return new WaitForSeconds(0.1f);
-                continue;
-            }
-
-            int micPos = Microphone.GetPosition(lastUsedMic);
-            if (micPos < samples.Length)
-            {
-                yield return new WaitForSeconds(0.1f);
-                continue;
-            }
-
-            bool gotData = false;
-            try { micMonitorClip.GetData(samples, micPos - samples.Length); gotData = true; } catch { }
-            if (!gotData) yield return new WaitForSeconds(0.1f);
-
-            float sum = samples.Sum(sample => sample * sample);
-            float volume = Mathf.Sqrt(sum / samples.Length);
-
-            if (volume > silenceThreshold)
-                lastLoudTime = Time.time;
-
-            if (Time.time - lastLoudTime > silenceTimeout)
-            {
-                Debug.Log("🛑 Silence detected. Auto-stopping voice command.");
-                StopVoiceCommand();
-                yield break;
-            }
-
-            yield return new WaitForSeconds(0.1f);
-        }
+        Debug.LogWarning("⚠️ No clip to monitor.");
+        yield break;
     }
+
+    while (recorder.IsRecording())
+    {
+        int micPos = Microphone.GetPosition(lastUsedMic);
+        if (micPos < sampleWindow)
+        {
+            yield return new WaitForSeconds(0.1f);
+            continue;
+        }
+
+        micClip.GetData(samples, micPos - sampleWindow);
+        float sum = 0f, peak = 0f;
+        foreach (var s in samples)
+        {
+            float abs = Mathf.Abs(s);
+            sum += abs;
+            if (abs > peak) peak = abs;
+        }
+
+        float avg = sum / samples.Length;
+        float rms = Mathf.Sqrt(sum / samples.Length);
+
+        Debug.Log($"🎙️ RMS={rms:F5} | Peak={peak:F5} | Avg={avg:F5} | Silence={Time.time - lastLoudTime:F2}s");
+
+        if (rms > silenceThreshold)
+            lastLoudTime = Time.time;
+
+        if (Time.time - lastLoudTime > silenceTimeout)
+        {
+            Debug.Log("🛑 Silence detected. Stopping...");
+            StopVoiceCommand();
+            yield break;
+        }
+
+        yield return new WaitForSeconds(0.2f);
+    }
+}
+
+
 
     private void HandleTranscribedInput(string input)
     {
