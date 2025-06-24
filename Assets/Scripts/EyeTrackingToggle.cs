@@ -16,7 +16,6 @@ public class EyeTrackingToggle : MonoBehaviour
     public TMP_Text camDropdownLabel;
     public GameObject volumeBarUI;
     public GameObject micClickObject;
-    //public MouseHover HoverWithDelayObject;
 
     private bool isEnabled;
     private bool hasCamera;
