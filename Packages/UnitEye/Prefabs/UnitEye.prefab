@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 3128903029877491936}
   - component: {fileID: 3128903029877491944}
   - component: {fileID: 3128903029877491945}
-  - component: {fileID: 4428817846945226104}
   m_Layer: 0
   m_Name: UnitEye
   m_TagString: Untagged
@@ -48,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 896eb57cbfb900e4fbba99cb025b6f16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  webCamName: USB2.0 FHD UVC WebCam
+  webCamName: GENERAL WEBCAM
   webCamResolution: {x: 1920, y: 1080}
   staticInput: {fileID: 0}
   rawImage: {fileID: 0}
@@ -122,27 +121,3 @@ MonoBehaviour:
   useDefaultFolder: 1
   timeUntilWrite: 10
   logsPerSecond: 999
---- !u!114 &4428817846945226104
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3485875271603776584}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9badba6d1fceec941b2466982037c4ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  points: []
-  calibrationDot: {fileID: 2800000, guid: 5256747c2ede88a48b8744e26b8108bf, type: 3}
-  speed: 5
-  padding: 20
-  drawCheckpoints: 0
-  currentRound: 0
-  maxRoundsPerPreset: 2
-  calibrationType: 2
-  save: 1
-  stopAfterPoints: 1
-  quitAfterCalibration: 0
-  path: {fileID: 0}
