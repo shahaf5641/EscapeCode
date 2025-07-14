@@ -55,8 +55,25 @@ public class EyeTrackingToggle : MonoBehaviour
         isEnabled = !isEnabled;
         eyeTrackingObject.SetActive(isEnabled);
         Cursor.visible = !isEnabled;
+
         if (micClickObject != null)
             micClickObject.SetActive(isEnabled);
+
+        if (micClick != null)
+        {
+            micClick.enabled = isEnabled;
+
+            if (isEnabled)
+            {
+                micClick.ActivateMic();
+                Debug.Log("🎙️ MicClick enabled with EyeTracking ON");
+            }
+            else
+            {
+                Debug.Log("🎙️ MicClick disabled with EyeTracking OFF");
+            }
+        }
+
         PlayerPrefs.SetInt("EyeTrackingEnabled", isEnabled ? 1 : 0);
         PlayerPrefs.Save();
 
