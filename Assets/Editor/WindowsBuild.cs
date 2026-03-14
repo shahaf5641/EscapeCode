@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -44,7 +45,7 @@ public static class WindowsBuild
         BuildReport report = BuildPipeline.BuildPlayer(options);
         if (report.summary.result != BuildResult.Succeeded)
         {
-            throw new BuildFailedException($"Windows build failed: {report.summary.result}");
+            throw new Exception($"Windows build failed: {report.summary.result}");
         }
 
         UnityEngine.Debug.Log($"Windows build completed successfully: {outputPath}");
