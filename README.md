@@ -4,6 +4,19 @@ EscapeCode is a Unity 6 3D escape-room game that combines programming puzzles, A
 
 This repository contains the final project version of the game, including the playable Unity project, the AI integration layer, the bundled Python validator, and the supporting academic material.
 
+## Playable Build
+
+If you just want to play the game and not open the Unity project, download the latest Windows build from the repository Releases page:
+
+- `GitHub -> Releases -> latest EscapeCode Windows build`
+
+Player notes:
+
+- Extract the downloaded `.zip`
+- Open `EscapeCode.exe`
+- No Unity installation is required for the playable build
+- All Ai communications are disabled for this version because API key is required
+
 ## Overview
 
 - Genre: 3D escape room / educational serious game
