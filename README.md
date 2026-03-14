@@ -4,7 +4,7 @@ EscapeCode is a Unity 6 3D escape-room game that combines programming puzzles, A
 
 This repository contains the final project version of the game, including the playable Unity project, the AI integration layer, the bundled Python validator, and the supporting academic material.
 
-## Playable Build
+## How To Play
 
 If you just want to play the game and not open the Unity project, download the latest Windows build from the repository Releases page:
 
@@ -200,14 +200,6 @@ Important:
 
 - Do not commit a real API key into version control.
 - Without this file, the AI chat and voice transcription features will not work.
-
-### How To Run
-
-1. Open the project root in Unity Hub.
-2. Make sure the editor version is `6000.0.43f1`.
-3. Open `Assets/Scenes/MainMenuScene.unity`.
-4. Connect a camera and microphone if you want to use gaze and voice features.
-5. Press Play in the Unity Editor.
 
 ### Build Notes
 
