@@ -11,20 +11,21 @@ public class ChatGPTClient : MonoBehaviour
     public bool isInCodeMode = false;
     public GameObject currentPuzzle;
     private string openAIKey;
+
+    public bool HasApiKey => !string.IsNullOrWhiteSpace(openAIKey);
     
     void Awake()
     {
-        TextAsset jsonFile = Resources.Load<TextAsset>("openai_config");
-
-        if (jsonFile == null)
-        {
-            Debug.LogError("openai_config.json not found in Resources!");
-        }
-        OpenAIConfig config = JsonUtility.FromJson<OpenAIConfig>(jsonFile.text);
-        openAIKey = config?.openai_api_key;
+        openAIKey = OpenAIKeyLoader.LoadApiKey();
     }
     public IEnumerator GetAIHelp(string prompt, Action<string> onResponse)
     {
+        if (!HasApiKey)
+        {
+            Debug.LogWarning("ChatGPT request skipped because no OpenAI API key is configured.");
+            yield break;
+        }
+
         string apiUrl = "https://api.openai.com/v1/chat/completions";
         string systemPrompt;
         string puzzleType = "";

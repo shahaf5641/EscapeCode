@@ -15,4 +15,9 @@ public static class OpenAIKeyLoader
         OpenAIConfig config = JsonUtility.FromJson<OpenAIConfig>(jsonFile.text);
         return config?.openai_api_key;
     }
+
+    public static bool HasApiKey()
+    {
+        return !string.IsNullOrWhiteSpace(LoadApiKey());
+    }
 }
